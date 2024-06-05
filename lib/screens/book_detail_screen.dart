@@ -5,6 +5,7 @@ import 'package:acquire_lms_mobile_app/provider/detail_provider.dart';
 import 'package:acquire_lms_mobile_app/provider/home_provider.dart';
 import 'package:acquire_lms_mobile_app/utils/spaces.dart';
 import 'package:acquire_lms_mobile_app/widgets/app_bar_widget.dart';
+import 'package:acquire_lms_mobile_app/widgets/build_app_drawer.dart';
 import 'package:acquire_lms_mobile_app/widgets/screen_title_widget.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
@@ -42,11 +43,7 @@ class BookDetailScreen extends StatelessWidget {
         elevation: 0,
         leading: TextButton(
           onPressed: () {
-            if (_isBookListNotEmpty(context)) {
-              Navigator.pop(context);
-            } else {
-              context.pushRoute(const CatalogScreen());
-            }
+            context.router.navigate(const CatalogScreen());
           },
           child: const Text(
             'Back',
@@ -60,14 +57,12 @@ class BookDetailScreen extends StatelessWidget {
           ],
         ),
       ),
-
-      bottomNavigationBar: _bottomNavWidget(),
+      endDrawer: const BuildAppDrawer(),
       body: FutureBuilder<BookModel?>(
         future: DetailProvider().getBookDetail(bookId),
         builder: (context, apiResponse) {
           final bookModel = apiResponse.data;
           DetailProvider.bookUrl = bookModel?.bookUrl;
-
           if (apiResponse.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           }
@@ -109,9 +104,101 @@ class BookDetailScreen extends StatelessWidget {
                       style: const TextStyle(color: Colors.black, fontSize: 14),
                     ),
                   ),
-                  Padding(
-                      padding: const EdgeInsets.only(left: 16, right: 16, top: 16),
-                      child: Image.network(bookModel?.thumbnail ?? "")),
+                 Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding:
+                            const EdgeInsets.only(left: 16, right: 10, top: 16),
+                        child: Image.network(bookModel?.thumbnail ?? ""),
+                      ),
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.only(
+                              right: 16, top: 16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              Text(
+                                "By: ${bookModel?.authors ?? "Unknown"}",
+                                style: const TextStyle(
+                                    color: Colors.black, fontSize: 14),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                "Publisher: ${bookModel?.publisher ?? "Unknown"}",
+                                style: const TextStyle(
+                                    color: Colors.black, fontSize: 14),
+                              ),
+                              const SizedBox(height: 8),
+                              const Text(
+                                "Published: Unknown",
+                                // ${bookModel?.publishedDate ?? "Unknown"}",
+                                style: TextStyle(
+                                    color: Colors.black, fontSize: 14),
+                              ),
+                              Text(
+                                "ISBN: ${bookModel?.isbn ?? "Unknown"}",
+                                style: const TextStyle(
+                                    color: Colors.black, fontSize: 14),
+                              ),
+                              const SizedBox(height: 5),
+                              Row(
+                                children: [
+                                  TextButton(
+                                    onPressed: () {
+                                      // Handle place hold action
+                                    },
+                                    child: const Text('Place Hold'),
+                                  ),
+                                  const SizedBox(width: 2),
+                                  TextButton(
+                                    onPressed: () {
+                                      // Handle add to list action
+                                    },
+                                    child: const Text('Add to List',
+                                        style: TextStyle(color: Colors.red)),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ), 
+                  verticalSpacing(20),
+                  Center(
+                    child: Container(
+                      height: 45,
+                      width: MediaQuery.of(context).size.width * .9,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(3),
+                          color: Colors.red),
+                      child: TextButton(
+                          onPressed: () async {
+                            final url = DetailProvider.bookUrl;
+                            if (url != null) {
+                              // ignore: deprecated_member_use
+                              if (!await launch(url)) {
+                                throw 'Could not launch $url';
+                              }
+                            }
+                          },
+                          child: const Text(
+                            "Know more",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 14,
+                              fontFamily: 'League Spartan',
+                              fontWeight: FontWeight.w700,
+                              height: 0,
+                            ),
+                          )),
+                    ),
+                  ),
+                  verticalSpacing(20),
                   Padding(
                       padding: const EdgeInsets.only(left: 16, right: 16, top: 16),
                       child: HtmlWidget(bookModel?.description ?? "-")),

@@ -1,228 +1,199 @@
-import 'dart:io';
-
-import 'package:acquire_lms_mobile_app/config/app_router.gr.dart';
 import 'package:acquire_lms_mobile_app/models/book_model.dart';
 import 'package:acquire_lms_mobile_app/provider/book_provider.dart';
-import 'package:acquire_lms_mobile_app/utils/spaces.dart';
-import 'package:acquire_lms_mobile_app/widgets/app_bar_widget.dart';
-import 'package:acquire_lms_mobile_app/widgets/build_app_drawer.dart';
-import 'package:acquire_lms_mobile_app/widgets/screen_title_widget.dart';
+
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:provider/provider.dart';
-import 'package:uuid/uuid.dart';
 
 @RoutePage()
 class ModifyBookScreen extends StatefulWidget {
-  const ModifyBookScreen({super.key});
+  final String bookId;
+
+  const ModifyBookScreen({super.key, required this.bookId});
 
   @override
-  ModifyBookScreenState createState() => ModifyBookScreenState();
+  State<ModifyBookScreen> createState() => _ModifyBookScreenState();
 }
 
-class ModifyBookScreenState extends State<ModifyBookScreen> {
+class _ModifyBookScreenState extends State<ModifyBookScreen> {
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _titleController = TextEditingController();
-  final TextEditingController _authorController = TextEditingController();
-  final TextEditingController _subtitleController = TextEditingController();
-  final TextEditingController _descriptionController = TextEditingController();
-  final TextEditingController _copiesController = TextEditingController();
-  final TextEditingController _isbnController = TextEditingController();
-  File? _image;
+  late BookModel _bookModel;
+  bool _isLoading = true;
+  final BooksProvider _bookProvider = BooksProvider();
 
-  Future<void> _pickImage() async {
-    final pickedFile =
-        await ImagePicker().pickImage(source: ImageSource.gallery);
-
-    if (pickedFile != null) {
-      setState(() {
-        _image = File(pickedFile.path);
-      });
-    }
+  @override
+  void initState() {
+    super.initState();
+    _fetchBookDetails();
   }
 
-   void _submitForm() {
-    if (_formKey.currentState!.validate()) {
-      final newBook = BookModel(
-        id: const Uuid().v4(),
-        title: _titleController.text,
-        subtitle: _subtitleController.text,
-        authors: _authorController.text.split(',').map((e) => e.trim()).toList(),
-        description: _descriptionController.text,
-        thumbnail: _image?.path ?? '',
-        bookUrl: '', // Add a URL if needed
-        availableCopies: int.parse(_copiesController.text),
-      );
-
-      Provider.of<BooksProvider>(context, listen: false).addBook(newBook);
-
+  Future<void> _fetchBookDetails() async {
+    try {
+      final bookDetails = await _bookProvider.fetchBookDetails(widget.bookId);
+      setState(() {
+        _bookModel = BookModel.fromApi(bookDetails);
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Book "${newBook.title}" added successfully!')),
+        SnackBar(content: Text('Failed to load book details: $e')),
       );
-
-      Navigator.of(context).pop();
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return Scaffold(
+        appBar: AppBar(
+          title: const Text('Modify Book'),
+        ),
+        body: const Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(
-        actions: [
-          Builder(
-            builder: (context) => IconButton(
-              icon: const Icon(Icons.menu, color: Colors.red),
-              onPressed: () {
-                Scaffold.of(context).openEndDrawer();
-              },
-            ),
-          ),
-        ],
-        leading: TextButton(
-          onPressed: () {
-            context..router.navigate(const CollectionScreen());
-          },
-          child: const Text(
-            'Back',
-            style: TextStyle(color: Colors.red),
-          ),
-        ),
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(1.0),
-          child: Container(
-            color: const Color(0xFF909090),
-            height: 4.0,
-            margin: const EdgeInsets.symmetric(vertical: 0.0, horizontal: 13.0),
-          ),
-        ),
-        backgroundColor: Colors.transparent,
-        surfaceTintColor: Colors.transparent,
-        elevation: 0,
-        toolbarHeight: 80,
-        title: Center(
-          child: Image.asset(
-            'assets/Logo.png',
-            height: 50,
-          ),
-        ),
+        title: const Text('Modify Book'),
       ),
-      endDrawer: const BuildAppDrawer(),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 0.0, horizontal: 15.0),
+      body: Form(
+        key: _formKey,
         child: SingleChildScrollView(
-          child: Form(
-            key: _formKey,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                const SizedBox(height: 20),
-                const Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    ScreenHeader(headerText: "Record Book"),
-                  ],
-                ),
-                const SizedBox(height: 20),
-                GestureDetector(
-                  onTap: _pickImage,
-                  child: _image == null
-                      ? Column(
-                          children: [
-                            Image.asset(
-                              'assets/book-placeholder.jpg',
-                              height: 100,
-                            ),
-                            const Text(
-                              'Upload Book Cover',
-                              style: TextStyle(color: Colors.blue),
-                            ),
-                          ],
-                        )
-                      : Image.file(
-                          _image!,
-                          height: 100,
-                        ),
-                ),
-                const SizedBox(height: 20),
-                TextFormField(
-                  controller: _titleController,
-                  decoration: const InputDecoration(labelText: 'Book Title'),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter the book title';
-                    }
-                    return null;
-                  },
-                ),
-                TextFormField(
-                  controller: _authorController,
-                  decoration: const InputDecoration(labelText: 'Author'),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter the author';
-                    }
-                    return null;
-                  },
-                ),
-                TextFormField(
-                  controller: _subtitleController,
-                  decoration:
-                      const InputDecoration(labelText: 'Subtitle'),
-                ),
-                TextFormField(
-                  controller: _descriptionController,
-                  decoration: const InputDecoration(labelText: 'Descripton'),
-                ),
-                TextFormField(
-                  controller: _copiesController,
-                  decoration: const InputDecoration(labelText: 'Copies'),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter the number of copies';
-                    }
-                    return null;
-                  },
-                ),
-                TextFormField(
-                  controller: _isbnController,
-                  decoration: const InputDecoration(labelText: 'ISBN'),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter a ISBN';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    ElevatedButton(
-                      onPressed: () {
-                        // Implement cancel functionality
-                      },
-                      child: const Text('Cancel'),
-                      style: ElevatedButton.styleFrom(
-                        foregroundColor: Colors.white,
-                        backgroundColor: Colors.grey,
-                      ),
-                    ),
-                   ElevatedButton(
-                      onPressed: _submitForm,
-                      child: const Text('Confirm'),
-                      style: ElevatedButton.styleFrom(
-                        foregroundColor: Colors.white,
-                        backgroundColor: Colors.red,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: <Widget>[
+              TextFormField(
+                initialValue: _bookModel.title,
+                decoration: const InputDecoration(labelText: 'Title'),
+                onSaved: (value) {
+                  _bookModel = _bookModel.copyWith(title: value);
+                },
+              ),
+              TextFormField(
+                initialValue: _bookModel.subtitle,
+                decoration: const InputDecoration(labelText: 'Subtitle'),
+                onSaved: (value) {
+                  _bookModel = _bookModel.copyWith(subtitle: value);
+                },
+              ),
+              TextFormField(
+                initialValue: _bookModel.authors?.join(', '),
+                decoration: const InputDecoration(labelText: 'Authors'),
+                onSaved: (value) {
+                  _bookModel = _bookModel.copyWith(authors: value?.split(', '));
+                },
+              ),
+              TextFormField(
+                initialValue: _bookModel.description,
+                decoration: const InputDecoration(labelText: 'Description'),
+                onSaved: (value) {
+                  _bookModel = _bookModel.copyWith(description: value);
+                },
+              ),
+              TextFormField(
+                initialValue: _bookModel.thumbnail,
+                decoration: const InputDecoration(labelText: 'Thumbnail URL'),
+                onSaved: (value) {
+                  _bookModel = _bookModel.copyWith(thumbnail: value);
+                },
+              ),
+              TextFormField(
+                initialValue: _bookModel.bookUrl,
+                decoration: const InputDecoration(labelText: 'Book URL'),
+                onSaved: (value) {
+                  _bookModel = _bookModel.copyWith(bookUrl: value);
+                },
+              ),
+              TextFormField(
+                initialValue: _bookModel.availableCopies.toString(),
+                decoration: const InputDecoration(labelText: 'Available Copies'),
+                keyboardType: TextInputType.number,
+                onSaved: (value) {
+                  _bookModel =
+                      _bookModel.copyWith(availableCopies: int.parse(value!));
+                },
+              ),
+              TextFormField(
+                initialValue: _bookModel.edition,
+                decoration: const InputDecoration(labelText: 'Edition'),
+                onSaved: (value) {
+                  _bookModel = _bookModel.copyWith(edition: value);
+                },
+              ),
+              TextFormField(
+                initialValue: _bookModel.publisher,
+                decoration: const InputDecoration(labelText: 'Publisher'),
+                onSaved: (value) {
+                  _bookModel = _bookModel.copyWith(publisher: value);
+                },
+              ),
+              TextFormField(
+                initialValue: _bookModel.isbn,
+                decoration: const InputDecoration(labelText: 'ISBN'),
+                onSaved: (value) {
+                  _bookModel = _bookModel.copyWith(isbn: value);
+                },
+              ),
+              TextFormField(
+                initialValue: _bookModel.length,
+                decoration: const InputDecoration(labelText: 'Length'),
+                onSaved: (value) {
+                  _bookModel = _bookModel.copyWith(length: value);
+                },
+              ),
+              TextFormField(
+                initialValue: _bookModel.subjects?.join(', '),
+                decoration: const InputDecoration(labelText: 'Subjects'),
+                onSaved: (value) {
+                  _bookModel =
+                      _bookModel.copyWith(subjects: value?.split(', '));
+                },
+              ),
+              DropdownButtonFormField<String>(
+                value: _bookModel.categories?.isNotEmpty == true ? _bookModel.categories![0] : null,
+                decoration: const InputDecoration(labelText: 'Category'),
+                items: (_bookModel.categories ?? []).map((category) {
+                  return DropdownMenuItem<String>(
+                    value: category,
+                    child: Text(category),
+                  );
+                }).toList(),
+                onChanged: (value) {
+                  if (value != null) {
+                    setState(() {
+                      _bookModel.categories = [value];
+                    });
+                  }
+                },
+                onSaved: (value) {
+                  if (value != null) {
+                    _bookModel = _bookModel.copyWith(categories: [value]);
+                  }
+                },
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  if (_formKey.currentState!.validate()) {
+                    _formKey.currentState!.save();
+                    _saveModifiedBookDetails();
+                  }
+                },
+                child: const Text('Submit'),
+              ),
+            ],
           ),
         ),
       ),
     );
+  }
+
+  void _saveModifiedBookDetails() {
+    // Implement the logic to save the modified book details in your local database or state
+    print('Modified Book Details: ${_bookModel.toJson()}');
+    // Add your code to save the details here
   }
 }

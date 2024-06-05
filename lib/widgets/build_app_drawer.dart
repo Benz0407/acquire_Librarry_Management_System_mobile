@@ -1,5 +1,4 @@
 import 'package:acquire_lms_mobile_app/config/app_router.gr.dart';
-import 'package:acquire_lms_mobile_app/models/user_model.dart';
 import 'package:acquire_lms_mobile_app/provider/login_provider.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
@@ -80,7 +79,7 @@ class BuildAppDrawer extends StatelessWidget {
               await loginProvider.signOutUser();
                 Navigator.pop(context); // This pops the drawer
                 // Add navigation to the login screen or home screen
-                context.router.replace(LoginRoute());
+                context.router.replace(const LoginRoute());
             },
           ),
         ],

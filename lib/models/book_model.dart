@@ -1,3 +1,7 @@
+import 'dart:convert';
+import 'dart:typed_data';
+import 'package:html/parser.dart' show parse;
+
 class BookModel {
   String? id;
   String? title;
@@ -6,7 +10,14 @@ class BookModel {
   String? description;
   String? thumbnail;
   String? bookUrl;
-  int  availableCopies;
+  int availableCopies;
+  String? edition;
+  String? publisher;
+  String? isbn;
+  String? length;
+  List<String>? subjects;
+  List<String>? categories;
+  Uint8List? coverBlob; 
 
   BookModel({
     this.id,
@@ -17,7 +28,19 @@ class BookModel {
     this.thumbnail,
     this.bookUrl,
     this.availableCopies = 1,
+    this.edition,
+    this.publisher,
+    this.isbn,
+    this.length,
+    this.subjects,
+    this.categories,
+    this.coverBlob, 
   });
+
+  String _stripHtmlTags(String htmlString) {
+    final document = parse(htmlString);
+    return parse(document.body?.text).documentElement?.text ?? '';
+  }
 
   factory BookModel.fromApi(Map<String, dynamic> data) {
     String getThumbnailSafety(Map<String, dynamic> data) {
@@ -39,40 +62,71 @@ class BookModel {
     }
 
     int getAvailableCopies(Map<String, dynamic> data) {
-      // Assuming the available copies information is available in the API response
-      // Adjust the path according to your API response structure
       final availableCopies = data['volumeInfo']['availableCopies'];
       if (availableCopies != null) {
         return availableCopies;
       } else {
-        return 1; // Default to 0 if not available
+        return 1; 
       }
     }
 
-    return BookModel(
+    final bookModel = BookModel(
       id: data['id'],
       title: data['volumeInfo']['title'],
-      description: data['volumeInfo']['description'],
       subtitle: data['volumeInfo']['subtitle'],
       authors: getAuthors(data),
+      description: data['volumeInfo']['description'],
       thumbnail: getThumbnailSafety(data).replaceAll("http", "https"),
       bookUrl: data['volumeInfo']['previewLink'],
       availableCopies: getAvailableCopies(data),
+      edition: data['volumeInfo']['edition'],
+      publisher: data['volumeInfo']['publisher'],
+      isbn: data['volumeInfo']['industryIdentifiers'] != null && data['volumeInfo']['industryIdentifiers'].length > 0
+          ? data['volumeInfo']['industryIdentifiers'][0]['identifier']
+          : null,
+      length: data['volumeInfo']['pageCount'] != null ? '${data['volumeInfo']['pageCount']} pages' : null,
+      subjects: data['volumeInfo']['categories'] != null
+          ? List<String>.from(data['volumeInfo']['categories'])
+          : null,
+          categories: data['volumeInfo']['categories'] != null
+          ? List<String>.from(data['volumeInfo']['categories'])
+          : null,
     );
+
+    // Strip HTML tags from the description
+    if (bookModel.description != null) {
+      bookModel.description = bookModel._stripHtmlTags(bookModel.description!);
+    }
+
+    return bookModel;
   }
 
-  factory BookModel.fromJson(Map<String, dynamic> json) {
-    return BookModel(
-      id: json['id'],
-      title: json['title'],
-      subtitle: json['subtitle'],
-      authors: List<String>.from(json['authors']),
-      description: json['description'],
-      thumbnail: json['thumbnail'],
-      bookUrl: json['bookUrl'],
-      availableCopies: int.parse(json['availableCopies']),
-    );
-  }
+factory BookModel.fromJson(Map<String, dynamic> json) {
+  return BookModel(
+    id: json['id'],
+    title: json['title'],
+    subtitle: json['subtitle'],
+    authors: json['authors'] != null && json['authors'] is List
+        ? List<String>.from(json['authors'])
+        : [],
+    description: json['description'],
+    thumbnail: json['thumbnail'],
+    bookUrl: json['bookUrl'],
+    availableCopies: json['availableCopies'] != null ? int.parse(json['availableCopies'].toString()) : 1,
+    edition: json['edition'],
+    publisher: json['publisher'],
+    isbn: json['isbn'],
+    length: json['length'],
+    subjects: json['subjects'] != null && json['subjects'] is List
+        ? List<String>.from(json['subjects'])
+        : [],
+    categories: json['categories'] != null && json['categories'] is List
+        ? List<String>.from(json['categories'])
+        : [], // Ensure 'categories' is always parsed as a List
+    coverBlob: json['coverBlob'] != null ? base64Decode(json['coverBlob']) : null,
+  );
+}
+
 
   Map<String, dynamic> toJson() {
     return {
@@ -84,8 +138,48 @@ class BookModel {
       'thumbnail': thumbnail,
       'bookUrl': bookUrl,
       'availableCopies': availableCopies,
+      'edition': edition,
+      'publisher': publisher,
+      'isbn': isbn,
+      'length': length,
+      'subjects': subjects,
+      'categories': categories,
+      'coverBlob': coverBlob != null ? base64Encode(coverBlob!) : null,
     };
   }
 
-
+  BookModel copyWith({
+    String? title,
+    String? subtitle,
+    List<String>? authors,
+    String? description,
+    String? thumbnail,
+    String? bookUrl,
+    int? availableCopies,
+    String? edition,
+    String? publisher,
+    String? isbn,
+    String? length,
+    List<String>? subjects,
+    List<String>? categories,
+    Uint8List? coverBlob,
+  }) {
+    return BookModel(
+      id: id,
+      title: title ?? this.title,
+      subtitle: subtitle ?? this.subtitle,
+      authors: authors ?? this.authors,
+      description: description ?? this.description,
+      thumbnail: thumbnail ?? this.thumbnail,
+      bookUrl: bookUrl ?? this.bookUrl,
+      availableCopies: availableCopies ?? this.availableCopies,
+      edition: edition ?? this.edition,
+      publisher: publisher ?? this.publisher,
+      isbn: isbn ?? this.isbn,
+      length: length ?? this.length,
+      subjects: subjects ?? this.subjects,
+      categories: categories ?? this.categories,
+      coverBlob: coverBlob ?? this.coverBlob, 
+    );
+  }
 }

@@ -1,5 +1,4 @@
 import 'package:acquire_lms_mobile_app/provider/otp_provider.dart';
-import 'package:acquire_lms_mobile_app/screens/catalog_screen.dart';
 import 'package:acquire_lms_mobile_app/screens/register_screen.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:email_otp/email_otp.dart';

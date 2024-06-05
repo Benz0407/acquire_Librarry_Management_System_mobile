@@ -1,21 +1,44 @@
 import 'package:flutter/material.dart';
 
-class BookWidget extends StatelessWidget {
-  // final String? _title, _subtitle, _thumbnail;
+class SearchBookWidget extends StatelessWidget {
+  final String? id;
   final String? title;
   final String? subtitle;
+  final List<String>? author;
+  final String? description;
   final String? thumbnail;
-  final String? author;
+  final String? bookUrl;
   final int availableCopies;
+  final String? edition;
+  final String? publisher;
+  final String? isbn;
+  final String? length;
+  final List<String>? subjects;
+  final List<String>? categories;
+  final VoidCallback? onAddToCatalogPressed;
 
-    const BookWidget({super.key, 
+  const SearchBookWidget({
+    super.key,
+    this.id,
     this.title,
     this.subtitle,
-    this.thumbnail,
     this.author,
+    this.description,
+    this.thumbnail,
+    this.bookUrl,
     this.availableCopies = 0,
+    this.edition,
+    this.publisher,
+    this.isbn,
+    this.length,
+    this.subjects,
+    this.categories,
+    this.onAddToCatalogPressed,
   });
-   @override
+  
+
+
+  @override
   Widget build(BuildContext context) {
     return Card(
       margin: const EdgeInsets.all(10.0),
@@ -42,9 +65,9 @@ class BookWidget extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(fontWeight: FontWeight.w900),
                   ),
-                  const SizedBox(height: 8), 
+                  const SizedBox(height: 8),
                   Text(
-                    author ?? "Unknown Author",
+                    author != null ? author!.join(", ") : "Unknown Author",
                     style: const TextStyle(color: Colors.grey),
                   ),
                   const SizedBox(height: 8),
@@ -56,23 +79,16 @@ class BookWidget extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 2),
-                  Row(
+                  Column(
                     children: [
-                      TextButton(
-                        onPressed: () {
-                          // Handle place hold action
-                        },
-                        child: const Text('Place Hold'),
-                      ),
-                      const SizedBox(width: 2),
-                      TextButton(
-                        onPressed: () {
-                          // Handle add to list action
-                        },
-                        child: const Text('Add to List', 
-                         style: TextStyle(color: Colors.red)
+                      // Your existing book widget content
+                      // Add the "Add to Catalog" button here if needed
+                      if (onAddToCatalogPressed !=
+                          null) // Check if the callback is provided
+                        ElevatedButton(
+                          onPressed: onAddToCatalogPressed,
+                          child: const Text('Add to Catalog'),
                         ),
-                      ),
                     ],
                   ),
                 ],

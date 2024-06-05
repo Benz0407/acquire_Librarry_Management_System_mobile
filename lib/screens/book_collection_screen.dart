@@ -18,18 +18,45 @@ class CollectionScreen extends StatefulWidget {
   State<CollectionScreen> createState() => _CollectionScreenState();
 }
 
-class _CollectionScreenState extends State<CollectionScreen> {
+class _CollectionScreenState extends State<CollectionScreen>
+    with SingleTickerProviderStateMixin {
   final ScrollController _scrollController = ScrollController();
   final TextEditingController _searchController = TextEditingController();
   HomeProvider? _provider;
+  bool _isExpanded = false;
+  late Animation<double> _translateButton;
+  late Animation<double> _buttonAnimatedIcon;
+  late AnimationController _animationController;
 
   @override
-void initState() {
+  void initState() {
+    _animationController = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 600))
+      ..addListener(() {
+        setState(() {});
+      });
+
+    _buttonAnimatedIcon =
+        Tween<double>(begin: 0.0, end: 1.0).animate(_animationController);
+
+    _translateButton = Tween<double>(
+      begin: 100,
+      end: -20,
+    ).animate(CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.easeInOut,
+    ));
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _provider = Provider.of<HomeProvider>(context, listen: false);
-      _provider?.getBooks();
+      _provider?.adminGetBooks();
     });
+
+    @override
+    dispose() {
+      _animationController.dispose();
+      super.dispose();
+    }
 
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
@@ -37,7 +64,17 @@ void initState() {
         _getBooksApi();
       }
     });
-  } 
+  }
+
+  _toggle() {
+    if (_isExpanded) {
+      _animationController.reverse();
+    } else {
+      _animationController.forward();
+    }
+
+    _isExpanded = !_isExpanded;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -118,8 +155,7 @@ void initState() {
                           title: book.title,
                           subtitle: book.subtitle ?? book.description,
                           thumbnail: book.thumbnail,
-                          author:
-                              book.authors?.join(", ") ?? "Unknown Author",
+                          author: book.authors?.join(", ") ?? "Unknown Author",
                           availableCopies: book.availableCopies,
                         ),
                       );
@@ -137,28 +173,95 @@ void initState() {
       ),
     );
   }
-   Widget _floatingActionWidget() {
-    return  RawMaterialButton(
-      shape: const CircleBorder(),
-      padding: const EdgeInsets.all(16),
-      elevation: 2,
-      fillColor: Colors.red,
-      child: const Icon(
-        Icons.add,
-        size: 38,
-        color: Colors.white,
-      ),
-      onPressed: () {
-       context.pushRoute(const RecordBookRoute()); 
-      },
+
+  Widget _floatingActionWidget() {
+    // return RawMaterialButton(
+    //   shape: const CircleBorder(),
+    //   padding: const EdgeInsets.all(16),
+    //   elevation: 2,
+    //   fillColor: Colors.red,
+    //   child: const Icon(
+    //     Icons.add,
+    //     size: 38,
+    //     color: Colors.white,
+    //   ),
+    //   onPressed: () {
+    //     context.pushRoute(const RecordBookRoute());
+    //   },
+    // );
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        Transform(
+          transform: Matrix4.translationValues(
+            0.0,
+            _translateButton.value * 4,
+            0.0,
+          ),
+          child: FloatingActionButton(
+            shape: const CircleBorder(),
+            tooltip: "Manual add book",
+            backgroundColor: Colors.blue,
+            onPressed: () {context.pushRoute(const RecordBookRoute());},
+            heroTag: null,
+            child: const Icon(
+              Icons.edit_note_rounded,
+            ),
+          ),
+        ),
+        Transform(
+          transform: Matrix4.translationValues(
+            0,
+            _translateButton.value * 3,
+            0,
+          ),
+          child: FloatingActionButton(
+            shape: const CircleBorder(),
+            tooltip: "Scan barcode to add",
+            backgroundColor: Colors.red,
+            onPressed: () {/* Do something */},
+            heroTag: null,
+            child: const Icon(
+              Icons.qr_code_scanner,
+            ), 
+          ),
+        ),
+        Transform(
+          transform: Matrix4.translationValues(
+            0,
+            _translateButton.value * 2,
+            0,
+          ),
+          child: FloatingActionButton(
+            shape: const CircleBorder(),
+            tooltip: "Search to add",
+            backgroundColor: Colors.blueGrey.shade400, 
+            onPressed: () {context.pushRoute(const SearchAddBook());},
+            heroTag: null,
+            child: const Icon(Icons.screen_search_desktop_outlined), 
+          ),
+        ),
+        // This is the primary FAB
+        FloatingActionButton(
+          shape: const CircleBorder(),
+          tooltip: "Add book",
+          onPressed: _toggle,
+          heroTag: null,
+          child: AnimatedIcon(
+            icon: AnimatedIcons.menu_close,
+              progress: _buttonAnimatedIcon,
+          ), // Unique hero tag or set to null
+        ),
+      ],
     );
   }
+
   void _openBookDetail(BookModel book) {
     context.pushRoute(AdminBookDetailsScreen(bookId: book.id));
   }
 
   void _getBooksApi() {
     _provider?.showLoading();
-    _provider?.getBooks();
+    _provider?.adminGetBooks();
   }
 }

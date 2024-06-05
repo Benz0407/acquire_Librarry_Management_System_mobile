@@ -19,6 +19,8 @@ class AppRouter extends $AppRouter {
     AutoRoute(page: ModifyBookScreen.page, path: "/admin-modify-book-screen/:bookId"), 
     AutoRoute(page: OtpScreen.page, path: "/otp/:myauth/:schoolId"), 
     AutoRoute(page: SendEmailOtp.page, path: "/send-otp"), 
+    AutoRoute(page: SearchAddBook.page, path: "/searchAdd"), 
+
    
 
 

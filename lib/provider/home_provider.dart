@@ -49,13 +49,13 @@ class HomeProvider with ChangeNotifier {
   bool isLoading = false;
   String? query = "Informating Technology";
   int page = 0;
+
   Future<void> getBooks() async {
     isLoading = true;
     notifyListeners();
 
     try {
       books.clear();
-      await _fetchBooksFromLocal();
       await _fetchBooksFromGoogleBooks();
     } catch (e) {
       print("Error fetching books: $e");
@@ -65,37 +65,68 @@ class HomeProvider with ChangeNotifier {
     }
   }
 
-  Future<void> _fetchBooksFromLocal() async {
-    final response = await http.get(
-      Uri.parse(localApiUrl),
-      headers: {'Content-Type': 'application/json'},
-    );
+Future<void> adminGetBooks() async {
+    isLoading = true;
+    notifyListeners();
 
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      List<BookModel> localBooks = (data['books'] as List)
-          .map((item) => BookModel.fromJson(item))
-          .toList();
-      books.addAll(localBooks);
-    } else {
-      print('Failed to fetch local books: ${response.body}');
+    try {
+      books.clear();
+      await _fetchBooksFromLocal();
+    } catch (e) {
+      print("Error fetching books: $e");
+    } finally {
+      isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> _fetchBooksFromLocal() async {
+   try {
+      final response = await http.get(
+        Uri.parse(localApiUrl),
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        if (data['books'] is List) {
+          List<BookModel> localBooks = (data['books'] as List)
+              .map((item) => BookModel.fromJson(item))
+              .toList();
+          books.addAll(localBooks);
+        } else {
+          print('Unexpected response format for local books: ${response.body}');
+        }
+      } else {
+        print('Failed to fetch local books: ${response.body}');
+      }
+    } catch (e) {
+      print("Error fetching local books: $e");
     }
   }
 
   Future<void> _fetchBooksFromGoogleBooks() async {
-    final response = await http.get(
-      Uri.parse(
-          "https://www.googleapis.com/books/v1/volumes?q=$query&startIndex=$page&maxResults=40"),
-    );
+    try {
+      final response = await http.get(
+        Uri.parse(
+            "https://www.googleapis.com/books/v1/volumes?q=$query&startIndex=$page&maxResults=40"),
+      );
 
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      List<BookModel> googleBooks = (data['items'] as List)
-          .map((item) => BookModel.fromApi(item))
-          .toList();
-      books.addAll(googleBooks);
-    } else {
-      print('Failed to fetch Google Books: ${response.body}');
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        if (data['items'] is List) {
+          List<BookModel> googleBooks = (data['items'] as List)
+              .map((item) => BookModel.fromApi(item))
+              .toList();
+          books.addAll(googleBooks);
+        } else {
+          print('Unexpected response format for Google Books: ${response.body}');
+        }
+      } else {
+        print('Failed to fetch Google Books: ${response.body}');
+      }
+    } catch (e) {
+      print("Error fetching Google Books: $e");
     }
   }
 

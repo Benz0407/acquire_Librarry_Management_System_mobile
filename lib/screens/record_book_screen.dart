@@ -1,15 +1,14 @@
-import 'dart:io';
+import 'dart:convert';
+import 'dart:html' as html;
+import 'dart:typed_data';
 
 import 'package:acquire_lms_mobile_app/config/app_router.gr.dart';
 import 'package:acquire_lms_mobile_app/models/book_model.dart';
 import 'package:acquire_lms_mobile_app/provider/book_provider.dart';
-import 'package:acquire_lms_mobile_app/utils/spaces.dart';
-import 'package:acquire_lms_mobile_app/widgets/app_bar_widget.dart';
 import 'package:acquire_lms_mobile_app/widgets/build_app_drawer.dart';
 import 'package:acquire_lms_mobile_app/widgets/screen_title_widget.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
@@ -29,30 +28,56 @@ class RecordBookPageState extends State<RecordBookPage> {
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _copiesController = TextEditingController();
   final TextEditingController _isbnController = TextEditingController();
-  File? _image;
+  final TextEditingController _editionController = TextEditingController();
+  final TextEditingController _publisherController = TextEditingController();
+  final TextEditingController _lengthController = TextEditingController();
+  final TextEditingController _subjectsController = TextEditingController();
+  final TextEditingController _categoriesController = TextEditingController();
 
-  Future<void> _pickImage() async {
-    final pickedFile =
-        await ImagePicker().pickImage(source: ImageSource.gallery);
+  Uint8List? _imageBytes;
 
-    if (pickedFile != null) {
-      setState(() {
-        _image = File(pickedFile.path);
+  void _pickImage() async {
+    final html.FileUploadInputElement input = html.FileUploadInputElement();
+    input.accept = 'image/*';
+    input.click();
+
+    input.onChange.listen((event) {
+      final html.File file = input.files!.first;
+      final reader = html.FileReader();
+      reader.readAsArrayBuffer(file); // Read file as array buffer
+
+      reader.onLoadEnd.listen((event) {
+        final arrayBuffer = reader.result as Uint8List?;
+        if (arrayBuffer != null) {
+          setState(() {
+            _imageBytes = Uint8List.fromList(arrayBuffer);
+          });
+        }
       });
-    }
+    });
   }
 
-   void _submitForm() {
+  void _submitForm() {
     if (_formKey.currentState!.validate()) {
       final newBook = BookModel(
         id: const Uuid().v4(),
         title: _titleController.text,
         subtitle: _subtitleController.text,
-        authors: _authorController.text.split(',').map((e) => e.trim()).toList(),
+        authors:
+            _authorController.text.split(',').map((e) => e.trim()).toList(),
         description: _descriptionController.text,
-        thumbnail: _image?.path ?? '',
-        bookUrl: '', // Add a URL if needed
+        thumbnail: '',
+        bookUrl: '',
         availableCopies: int.parse(_copiesController.text),
+        edition: _editionController.text,
+        publisher: _publisherController.text,
+        isbn: _isbnController.text,
+        length: _lengthController.text,
+        subjects:
+            _subjectsController.text.split(',').map((e) => e.trim()).toList(),
+        categories: _categoriesController.text.split(',').map((e) => e.trim()).toList(),
+
+        coverBlob: _imageBytes, // Use Uint8List directly
       );
 
       Provider.of<BooksProvider>(context, listen: false).addBook(newBook);
@@ -81,7 +106,7 @@ class RecordBookPageState extends State<RecordBookPage> {
         ],
         leading: TextButton(
           onPressed: () {
-            context..router.navigate(const CollectionScreen());
+            context.router.navigate(const CollectionScreen());
           },
           child: const Text(
             'Back',
@@ -126,7 +151,7 @@ class RecordBookPageState extends State<RecordBookPage> {
                 const SizedBox(height: 20),
                 GestureDetector(
                   onTap: _pickImage,
-                  child: _image == null
+                  child: _imageBytes == null
                       ? Column(
                           children: [
                             Image.asset(
@@ -139,8 +164,8 @@ class RecordBookPageState extends State<RecordBookPage> {
                             ),
                           ],
                         )
-                      : Image.file(
-                          _image!,
+                      : Image.memory(
+                          _imageBytes!,
                           height: 100,
                         ),
                 ),
@@ -167,12 +192,11 @@ class RecordBookPageState extends State<RecordBookPage> {
                 ),
                 TextFormField(
                   controller: _subtitleController,
-                  decoration:
-                      const InputDecoration(labelText: 'Subtitle'),
+                  decoration: const InputDecoration(labelText: 'Subtitle'),
                 ),
                 TextFormField(
                   controller: _descriptionController,
-                  decoration: const InputDecoration(labelText: 'Descripton'),
+                  decoration: const InputDecoration(labelText: 'Description'),
                 ),
                 TextFormField(
                   controller: _copiesController,
@@ -187,33 +211,73 @@ class RecordBookPageState extends State<RecordBookPage> {
                 TextFormField(
                   controller: _isbnController,
                   decoration: const InputDecoration(labelText: 'ISBN'),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter a ISBN';
-                    }
-                    return null;
-                  },
+                ),
+                TextFormField(
+                  controller: _editionController,
+                  decoration: const InputDecoration(labelText: 'Edition'),
+                ),
+                TextFormField(
+                  controller: _publisherController,
+                  decoration: const InputDecoration(labelText: 'Publisher'),
+                ),
+                TextFormField(
+                  controller: _lengthController,
+                  decoration: const InputDecoration(labelText: 'Length'),
+                ),
+                TextFormField(
+                  controller: _subjectsController,
+                  decoration: const InputDecoration(labelText: 'Subjects'),
+                ),
+                TextFormField(
+                  controller: _categoriesController,
+                  decoration: const InputDecoration(labelText: 'Categories'),
                 ),
                 const SizedBox(height: 20),
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    ElevatedButton(
-                      onPressed: () {
-                        // Implement cancel functionality
-                      },
-                      child: const Text('Cancel'),
-                      style: ElevatedButton.styleFrom(
-                        foregroundColor: Colors.white,
-                        backgroundColor: Colors.grey,
+                    Container(
+                      height: 55,
+                      width: MediaQuery.of(context).size.width * .4,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: Colors.red),
+                        color: Colors.white,
+                      ),
+                      child: TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: const Text(
+                          'Cancel',
+                          style: TextStyle(
+                            color: Colors.red, // Set text color to red
+                            fontSize: 16,
+                            fontFamily: 'League Spartan',
+                            fontWeight: FontWeight.w700,
+                            height: 0,
+                          ),
+                        ),
                       ),
                     ),
-                   ElevatedButton(
-                      onPressed: _submitForm,
-                      child: const Text('Confirm'),
-                      style: ElevatedButton.styleFrom(
-                        foregroundColor: Colors.white,
-                        backgroundColor: Colors.red,
+                    Container(
+                      height: 55,
+                      width: MediaQuery.of(context).size.width * .4,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8),
+                          color: Colors.red),
+                      child: TextButton(
+                        onPressed: _submitForm,
+                        child: const Text(
+                          'Confirm',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontFamily: 'League Spartan',
+                            fontWeight: FontWeight.w700,
+                            height: 0,
+                          ),
+                        ),
                       ),
                     ),
                   ],

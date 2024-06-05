@@ -8,7 +8,7 @@
 // coverage:ignore-file
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:acquire_lms_mobile_app/models/user_model.dart' as _i15;
+import 'package:acquire_lms_mobile_app/models/user_model.dart' as _i16;
 import 'package:acquire_lms_mobile_app/screens/admin_book_detail_screen.dart'
     as _i1;
 import 'package:acquire_lms_mobile_app/screens/book_collection_screen.dart'
@@ -22,23 +22,24 @@ import 'package:acquire_lms_mobile_app/screens/modify_book_screen.dart' as _i7;
 import 'package:acquire_lms_mobile_app/screens/not_found_screen.dart' as _i8;
 import 'package:acquire_lms_mobile_app/screens/otp_screen.dart' as _i9;
 import 'package:acquire_lms_mobile_app/screens/record_book_screen.dart' as _i10;
+import 'package:acquire_lms_mobile_app/screens/record_book_search.dart' as _i12;
 import 'package:acquire_lms_mobile_app/screens/register_screen.dart' as _i11;
-import 'package:acquire_lms_mobile_app/screens/send_otp.dart' as _i12;
-import 'package:auto_route/auto_route.dart' as _i13;
-import 'package:email_otp/email_otp.dart' as _i16;
-import 'package:flutter/material.dart' as _i14;
+import 'package:acquire_lms_mobile_app/screens/send_otp.dart' as _i13;
+import 'package:auto_route/auto_route.dart' as _i14;
+import 'package:email_otp/email_otp.dart' as _i17;
+import 'package:flutter/material.dart' as _i15;
 
-abstract class $AppRouter extends _i13.RootStackRouter {
+abstract class $AppRouter extends _i14.RootStackRouter {
   $AppRouter({super.navigatorKey});
 
   @override
-  final Map<String, _i13.PageFactory> pagesMap = {
+  final Map<String, _i14.PageFactory> pagesMap = {
     AdminBookDetailsScreen.name: (routeData) {
       final pathParams = routeData.inheritedPathParams;
       final args = routeData.argsAs<AdminBookDetailsScreenArgs>(
           orElse: () => AdminBookDetailsScreenArgs(
               bookId: pathParams.optString('bookId')));
-      return _i13.AutoRoutePage<dynamic>(
+      return _i14.AutoRoutePage<dynamic>(
         routeData: routeData,
         child: _i1.AdminBookDetailsScreen(
           key: args.key,
@@ -51,7 +52,7 @@ abstract class $AppRouter extends _i13.RootStackRouter {
       final args = routeData.argsAs<BookDetailScreenArgs>(
           orElse: () =>
               BookDetailScreenArgs(bookId: pathParams.optString('bookId')));
-      return _i13.AutoRoutePage<dynamic>(
+      return _i14.AutoRoutePage<dynamic>(
         routeData: routeData,
         child: _i2.BookDetailScreen(
           key: args.key,
@@ -60,20 +61,20 @@ abstract class $AppRouter extends _i13.RootStackRouter {
       );
     },
     CatalogScreen.name: (routeData) {
-      return _i13.AutoRoutePage<dynamic>(
+      return _i14.AutoRoutePage<dynamic>(
         routeData: routeData,
         child: const _i3.CatalogScreen(),
       );
     },
     CollectionScreen.name: (routeData) {
-      return _i13.AutoRoutePage<dynamic>(
+      return _i14.AutoRoutePage<dynamic>(
         routeData: routeData,
         child: const _i4.CollectionScreen(),
       );
     },
     LibraryCardScreen.name: (routeData) {
       final args = routeData.argsAs<LibraryCardScreenArgs>();
-      return _i13.AutoRoutePage<dynamic>(
+      return _i14.AutoRoutePage<dynamic>(
         routeData: routeData,
         child: _i5.LibraryCardScreen(
           key: args.key,
@@ -82,26 +83,30 @@ abstract class $AppRouter extends _i13.RootStackRouter {
       );
     },
     LoginRoute.name: (routeData) {
-      return _i13.AutoRoutePage<dynamic>(
+      return _i14.AutoRoutePage<dynamic>(
         routeData: routeData,
         child: const _i6.LoginPage(),
       );
     },
     ModifyBookScreen.name: (routeData) {
-      return _i13.AutoRoutePage<dynamic>(
+      final args = routeData.argsAs<ModifyBookScreenArgs>();
+      return _i14.AutoRoutePage<dynamic>(
         routeData: routeData,
-        child: const _i7.ModifyBookScreen(),
+        child: _i7.ModifyBookScreen(
+          key: args.key,
+          bookId: args.bookId,
+        ),
       );
     },
     NotFoundScreen.name: (routeData) {
-      return _i13.AutoRoutePage<dynamic>(
+      return _i14.AutoRoutePage<dynamic>(
         routeData: routeData,
         child: const _i8.NotFoundScreen(),
       );
     },
     Otp.name: (routeData) {
       final args = routeData.argsAs<OtpArgs>();
-      return _i13.AutoRoutePage<dynamic>(
+      return _i14.AutoRoutePage<dynamic>(
         routeData: routeData,
         child: _i9.Otp(
           key: args.key,
@@ -111,7 +116,7 @@ abstract class $AppRouter extends _i13.RootStackRouter {
     },
     OtpScreen.name: (routeData) {
       final args = routeData.argsAs<OtpScreenArgs>();
-      return _i13.AutoRoutePage<dynamic>(
+      return _i14.AutoRoutePage<dynamic>(
         routeData: routeData,
         child: _i9.OtpScreen(
           key: args.key,
@@ -121,14 +126,14 @@ abstract class $AppRouter extends _i13.RootStackRouter {
       );
     },
     RecordBookRoute.name: (routeData) {
-      return _i13.AutoRoutePage<dynamic>(
+      return _i14.AutoRoutePage<dynamic>(
         routeData: routeData,
         child: const _i10.RecordBookPage(),
       );
     },
     RegistrationFormScreen.name: (routeData) {
       final args = routeData.argsAs<RegistrationFormScreenArgs>();
-      return _i13.AutoRoutePage<dynamic>(
+      return _i14.AutoRoutePage<dynamic>(
         routeData: routeData,
         child: _i11.RegistrationFormScreen(
           key: args.key,
@@ -136,10 +141,16 @@ abstract class $AppRouter extends _i13.RootStackRouter {
         ),
       );
     },
-    SendEmailOtp.name: (routeData) {
-      return _i13.AutoRoutePage<dynamic>(
+    SearchAddBook.name: (routeData) {
+      return _i14.AutoRoutePage<dynamic>(
         routeData: routeData,
-        child: const _i12.SendEmailOtp(),
+        child: const _i12.SearchAddBook(),
+      );
+    },
+    SendEmailOtp.name: (routeData) {
+      return _i14.AutoRoutePage<dynamic>(
+        routeData: routeData,
+        child: const _i13.SendEmailOtp(),
       );
     },
   };
@@ -148,11 +159,11 @@ abstract class $AppRouter extends _i13.RootStackRouter {
 /// generated route for
 /// [_i1.AdminBookDetailsScreen]
 class AdminBookDetailsScreen
-    extends _i13.PageRouteInfo<AdminBookDetailsScreenArgs> {
+    extends _i14.PageRouteInfo<AdminBookDetailsScreenArgs> {
   AdminBookDetailsScreen({
-    _i14.Key? key,
+    _i15.Key? key,
     String? bookId,
-    List<_i13.PageRouteInfo>? children,
+    List<_i14.PageRouteInfo>? children,
   }) : super(
           AdminBookDetailsScreen.name,
           args: AdminBookDetailsScreenArgs(
@@ -165,8 +176,8 @@ class AdminBookDetailsScreen
 
   static const String name = 'AdminBookDetailsScreen';
 
-  static const _i13.PageInfo<AdminBookDetailsScreenArgs> page =
-      _i13.PageInfo<AdminBookDetailsScreenArgs>(name);
+  static const _i14.PageInfo<AdminBookDetailsScreenArgs> page =
+      _i14.PageInfo<AdminBookDetailsScreenArgs>(name);
 }
 
 class AdminBookDetailsScreenArgs {
@@ -175,7 +186,7 @@ class AdminBookDetailsScreenArgs {
     this.bookId,
   });
 
-  final _i14.Key? key;
+  final _i15.Key? key;
 
   final String? bookId;
 
@@ -187,11 +198,11 @@ class AdminBookDetailsScreenArgs {
 
 /// generated route for
 /// [_i2.BookDetailScreen]
-class BookDetailScreen extends _i13.PageRouteInfo<BookDetailScreenArgs> {
+class BookDetailScreen extends _i14.PageRouteInfo<BookDetailScreenArgs> {
   BookDetailScreen({
-    _i14.Key? key,
+    _i15.Key? key,
     String? bookId,
-    List<_i13.PageRouteInfo>? children,
+    List<_i14.PageRouteInfo>? children,
   }) : super(
           BookDetailScreen.name,
           args: BookDetailScreenArgs(
@@ -204,8 +215,8 @@ class BookDetailScreen extends _i13.PageRouteInfo<BookDetailScreenArgs> {
 
   static const String name = 'BookDetailScreen';
 
-  static const _i13.PageInfo<BookDetailScreenArgs> page =
-      _i13.PageInfo<BookDetailScreenArgs>(name);
+  static const _i14.PageInfo<BookDetailScreenArgs> page =
+      _i14.PageInfo<BookDetailScreenArgs>(name);
 }
 
 class BookDetailScreenArgs {
@@ -214,7 +225,7 @@ class BookDetailScreenArgs {
     this.bookId,
   });
 
-  final _i14.Key? key;
+  final _i15.Key? key;
 
   final String? bookId;
 
@@ -226,8 +237,8 @@ class BookDetailScreenArgs {
 
 /// generated route for
 /// [_i3.CatalogScreen]
-class CatalogScreen extends _i13.PageRouteInfo<void> {
-  const CatalogScreen({List<_i13.PageRouteInfo>? children})
+class CatalogScreen extends _i14.PageRouteInfo<void> {
+  const CatalogScreen({List<_i14.PageRouteInfo>? children})
       : super(
           CatalogScreen.name,
           initialChildren: children,
@@ -235,13 +246,13 @@ class CatalogScreen extends _i13.PageRouteInfo<void> {
 
   static const String name = 'CatalogScreen';
 
-  static const _i13.PageInfo<void> page = _i13.PageInfo<void>(name);
+  static const _i14.PageInfo<void> page = _i14.PageInfo<void>(name);
 }
 
 /// generated route for
 /// [_i4.CollectionScreen]
-class CollectionScreen extends _i13.PageRouteInfo<void> {
-  const CollectionScreen({List<_i13.PageRouteInfo>? children})
+class CollectionScreen extends _i14.PageRouteInfo<void> {
+  const CollectionScreen({List<_i14.PageRouteInfo>? children})
       : super(
           CollectionScreen.name,
           initialChildren: children,
@@ -249,16 +260,16 @@ class CollectionScreen extends _i13.PageRouteInfo<void> {
 
   static const String name = 'CollectionScreen';
 
-  static const _i13.PageInfo<void> page = _i13.PageInfo<void>(name);
+  static const _i14.PageInfo<void> page = _i14.PageInfo<void>(name);
 }
 
 /// generated route for
 /// [_i5.LibraryCardScreen]
-class LibraryCardScreen extends _i13.PageRouteInfo<LibraryCardScreenArgs> {
+class LibraryCardScreen extends _i14.PageRouteInfo<LibraryCardScreenArgs> {
   LibraryCardScreen({
-    _i14.Key? key,
-    required _i15.User user,
-    List<_i13.PageRouteInfo>? children,
+    _i15.Key? key,
+    required _i16.User user,
+    List<_i14.PageRouteInfo>? children,
   }) : super(
           LibraryCardScreen.name,
           args: LibraryCardScreenArgs(
@@ -270,8 +281,8 @@ class LibraryCardScreen extends _i13.PageRouteInfo<LibraryCardScreenArgs> {
 
   static const String name = 'LibraryCardScreen';
 
-  static const _i13.PageInfo<LibraryCardScreenArgs> page =
-      _i13.PageInfo<LibraryCardScreenArgs>(name);
+  static const _i14.PageInfo<LibraryCardScreenArgs> page =
+      _i14.PageInfo<LibraryCardScreenArgs>(name);
 }
 
 class LibraryCardScreenArgs {
@@ -280,9 +291,9 @@ class LibraryCardScreenArgs {
     required this.user,
   });
 
-  final _i14.Key? key;
+  final _i15.Key? key;
 
-  final _i15.User user;
+  final _i16.User user;
 
   @override
   String toString() {
@@ -292,8 +303,8 @@ class LibraryCardScreenArgs {
 
 /// generated route for
 /// [_i6.LoginPage]
-class LoginRoute extends _i13.PageRouteInfo<void> {
-  const LoginRoute({List<_i13.PageRouteInfo>? children})
+class LoginRoute extends _i14.PageRouteInfo<void> {
+  const LoginRoute({List<_i14.PageRouteInfo>? children})
       : super(
           LoginRoute.name,
           initialChildren: children,
@@ -301,27 +312,51 @@ class LoginRoute extends _i13.PageRouteInfo<void> {
 
   static const String name = 'LoginRoute';
 
-  static const _i13.PageInfo<void> page = _i13.PageInfo<void>(name);
+  static const _i14.PageInfo<void> page = _i14.PageInfo<void>(name);
 }
 
 /// generated route for
 /// [_i7.ModifyBookScreen]
-class ModifyBookScreen extends _i13.PageRouteInfo<void> {
-  const ModifyBookScreen({List<_i13.PageRouteInfo>? children})
-      : super(
+class ModifyBookScreen extends _i14.PageRouteInfo<ModifyBookScreenArgs> {
+  ModifyBookScreen({
+    _i15.Key? key,
+    required String bookId,
+    List<_i14.PageRouteInfo>? children,
+  }) : super(
           ModifyBookScreen.name,
+          args: ModifyBookScreenArgs(
+            key: key,
+            bookId: bookId,
+          ),
           initialChildren: children,
         );
 
   static const String name = 'ModifyBookScreen';
 
-  static const _i13.PageInfo<void> page = _i13.PageInfo<void>(name);
+  static const _i14.PageInfo<ModifyBookScreenArgs> page =
+      _i14.PageInfo<ModifyBookScreenArgs>(name);
+}
+
+class ModifyBookScreenArgs {
+  const ModifyBookScreenArgs({
+    this.key,
+    required this.bookId,
+  });
+
+  final _i15.Key? key;
+
+  final String bookId;
+
+  @override
+  String toString() {
+    return 'ModifyBookScreenArgs{key: $key, bookId: $bookId}';
+  }
 }
 
 /// generated route for
 /// [_i8.NotFoundScreen]
-class NotFoundScreen extends _i13.PageRouteInfo<void> {
-  const NotFoundScreen({List<_i13.PageRouteInfo>? children})
+class NotFoundScreen extends _i14.PageRouteInfo<void> {
+  const NotFoundScreen({List<_i14.PageRouteInfo>? children})
       : super(
           NotFoundScreen.name,
           initialChildren: children,
@@ -329,16 +364,16 @@ class NotFoundScreen extends _i13.PageRouteInfo<void> {
 
   static const String name = 'NotFoundScreen';
 
-  static const _i13.PageInfo<void> page = _i13.PageInfo<void>(name);
+  static const _i14.PageInfo<void> page = _i14.PageInfo<void>(name);
 }
 
 /// generated route for
 /// [_i9.Otp]
-class Otp extends _i13.PageRouteInfo<OtpArgs> {
+class Otp extends _i14.PageRouteInfo<OtpArgs> {
   Otp({
-    _i14.Key? key,
-    required _i14.TextEditingController otpController,
-    List<_i13.PageRouteInfo>? children,
+    _i15.Key? key,
+    required _i15.TextEditingController otpController,
+    List<_i14.PageRouteInfo>? children,
   }) : super(
           Otp.name,
           args: OtpArgs(
@@ -350,7 +385,7 @@ class Otp extends _i13.PageRouteInfo<OtpArgs> {
 
   static const String name = 'Otp';
 
-  static const _i13.PageInfo<OtpArgs> page = _i13.PageInfo<OtpArgs>(name);
+  static const _i14.PageInfo<OtpArgs> page = _i14.PageInfo<OtpArgs>(name);
 }
 
 class OtpArgs {
@@ -359,9 +394,9 @@ class OtpArgs {
     required this.otpController,
   });
 
-  final _i14.Key? key;
+  final _i15.Key? key;
 
-  final _i14.TextEditingController otpController;
+  final _i15.TextEditingController otpController;
 
   @override
   String toString() {
@@ -371,12 +406,12 @@ class OtpArgs {
 
 /// generated route for
 /// [_i9.OtpScreen]
-class OtpScreen extends _i13.PageRouteInfo<OtpScreenArgs> {
+class OtpScreen extends _i14.PageRouteInfo<OtpScreenArgs> {
   OtpScreen({
-    _i14.Key? key,
-    required _i16.EmailOTP myauth,
+    _i15.Key? key,
+    required _i17.EmailOTP myauth,
     required String schoolId,
-    List<_i13.PageRouteInfo>? children,
+    List<_i14.PageRouteInfo>? children,
   }) : super(
           OtpScreen.name,
           args: OtpScreenArgs(
@@ -389,8 +424,8 @@ class OtpScreen extends _i13.PageRouteInfo<OtpScreenArgs> {
 
   static const String name = 'OtpScreen';
 
-  static const _i13.PageInfo<OtpScreenArgs> page =
-      _i13.PageInfo<OtpScreenArgs>(name);
+  static const _i14.PageInfo<OtpScreenArgs> page =
+      _i14.PageInfo<OtpScreenArgs>(name);
 }
 
 class OtpScreenArgs {
@@ -400,9 +435,9 @@ class OtpScreenArgs {
     required this.schoolId,
   });
 
-  final _i14.Key? key;
+  final _i15.Key? key;
 
-  final _i16.EmailOTP myauth;
+  final _i17.EmailOTP myauth;
 
   final String schoolId;
 
@@ -414,8 +449,8 @@ class OtpScreenArgs {
 
 /// generated route for
 /// [_i10.RecordBookPage]
-class RecordBookRoute extends _i13.PageRouteInfo<void> {
-  const RecordBookRoute({List<_i13.PageRouteInfo>? children})
+class RecordBookRoute extends _i14.PageRouteInfo<void> {
+  const RecordBookRoute({List<_i14.PageRouteInfo>? children})
       : super(
           RecordBookRoute.name,
           initialChildren: children,
@@ -423,17 +458,17 @@ class RecordBookRoute extends _i13.PageRouteInfo<void> {
 
   static const String name = 'RecordBookRoute';
 
-  static const _i13.PageInfo<void> page = _i13.PageInfo<void>(name);
+  static const _i14.PageInfo<void> page = _i14.PageInfo<void>(name);
 }
 
 /// generated route for
 /// [_i11.RegistrationFormScreen]
 class RegistrationFormScreen
-    extends _i13.PageRouteInfo<RegistrationFormScreenArgs> {
+    extends _i14.PageRouteInfo<RegistrationFormScreenArgs> {
   RegistrationFormScreen({
-    _i14.Key? key,
+    _i15.Key? key,
     required Map<String, dynamic> userDetails,
-    List<_i13.PageRouteInfo>? children,
+    List<_i14.PageRouteInfo>? children,
   }) : super(
           RegistrationFormScreen.name,
           args: RegistrationFormScreenArgs(
@@ -445,8 +480,8 @@ class RegistrationFormScreen
 
   static const String name = 'RegistrationFormScreen';
 
-  static const _i13.PageInfo<RegistrationFormScreenArgs> page =
-      _i13.PageInfo<RegistrationFormScreenArgs>(name);
+  static const _i14.PageInfo<RegistrationFormScreenArgs> page =
+      _i14.PageInfo<RegistrationFormScreenArgs>(name);
 }
 
 class RegistrationFormScreenArgs {
@@ -455,7 +490,7 @@ class RegistrationFormScreenArgs {
     required this.userDetails,
   });
 
-  final _i14.Key? key;
+  final _i15.Key? key;
 
   final Map<String, dynamic> userDetails;
 
@@ -466,9 +501,23 @@ class RegistrationFormScreenArgs {
 }
 
 /// generated route for
-/// [_i12.SendEmailOtp]
-class SendEmailOtp extends _i13.PageRouteInfo<void> {
-  const SendEmailOtp({List<_i13.PageRouteInfo>? children})
+/// [_i12.SearchAddBook]
+class SearchAddBook extends _i14.PageRouteInfo<void> {
+  const SearchAddBook({List<_i14.PageRouteInfo>? children})
+      : super(
+          SearchAddBook.name,
+          initialChildren: children,
+        );
+
+  static const String name = 'SearchAddBook';
+
+  static const _i14.PageInfo<void> page = _i14.PageInfo<void>(name);
+}
+
+/// generated route for
+/// [_i13.SendEmailOtp]
+class SendEmailOtp extends _i14.PageRouteInfo<void> {
+  const SendEmailOtp({List<_i14.PageRouteInfo>? children})
       : super(
           SendEmailOtp.name,
           initialChildren: children,
@@ -476,5 +525,5 @@ class SendEmailOtp extends _i13.PageRouteInfo<void> {
 
   static const String name = 'SendEmailOtp';
 
-  static const _i13.PageInfo<void> page = _i13.PageInfo<void>(name);
+  static const _i14.PageInfo<void> page = _i14.PageInfo<void>(name);
 }
