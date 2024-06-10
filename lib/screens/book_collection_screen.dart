@@ -50,6 +50,7 @@ class _CollectionScreenState extends State<CollectionScreen>
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _provider = Provider.of<HomeProvider>(context, listen: false);
       _provider?.adminGetBooks();
+      
     });
 
     @override
@@ -175,20 +176,6 @@ class _CollectionScreenState extends State<CollectionScreen>
   }
 
   Widget _floatingActionWidget() {
-    // return RawMaterialButton(
-    //   shape: const CircleBorder(),
-    //   padding: const EdgeInsets.all(16),
-    //   elevation: 2,
-    //   fillColor: Colors.red,
-    //   child: const Icon(
-    //     Icons.add,
-    //     size: 38,
-    //     color: Colors.white,
-    //   ),
-    //   onPressed: () {
-    //     context.pushRoute(const RecordBookRoute());
-    //   },
-    // );
     return Column(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
@@ -250,7 +237,7 @@ class _CollectionScreenState extends State<CollectionScreen>
           child: AnimatedIcon(
             icon: AnimatedIcons.menu_close,
               progress: _buttonAnimatedIcon,
-          ), // Unique hero tag or set to null
+          ), 
         ),
       ],
     );

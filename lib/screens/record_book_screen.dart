@@ -251,7 +251,7 @@ class RecordBookPageState extends State<RecordBookPage> {
                         child: const Text(
                           'Cancel',
                           style: TextStyle(
-                            color: Colors.red, // Set text color to red
+                            color: Colors.red, 
                             fontSize: 16,
                             fontFamily: 'League Spartan',
                             fontWeight: FontWeight.w700,

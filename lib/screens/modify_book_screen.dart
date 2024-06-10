@@ -3,6 +3,7 @@ import 'package:acquire_lms_mobile_app/provider/book_provider.dart';
 
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 @RoutePage()
 class ModifyBookScreen extends StatefulWidget {
@@ -179,7 +180,7 @@ class _ModifyBookScreenState extends State<ModifyBookScreen> {
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
                     _formKey.currentState!.save();
-                    _saveModifiedBookDetails();
+                    _saveModifiedBookDetails(context);
                   }
                 },
                 child: const Text('Submit'),
@@ -191,9 +192,19 @@ class _ModifyBookScreenState extends State<ModifyBookScreen> {
     );
   }
 
-  void _saveModifiedBookDetails() {
-    // Implement the logic to save the modified book details in your local database or state
+  void _saveModifiedBookDetails(BuildContext context) async {
+  final booksProvider = Provider.of<BooksProvider>(context, listen: false);
+
+  try {
+    await booksProvider.updateBook(_bookModel);
     print('Modified Book Details: ${_bookModel.toJson()}');
-    // Add your code to save the details here
+    // Add any additional logic here, e.g., showing a success message
+    Navigator.pop(context); // Navigate back or close the dialog
+  } catch (e) {
+    print('Error saving modified book details: $e');
+    // Handle error, e.g., showing an error message
   }
+}
+
+
 }

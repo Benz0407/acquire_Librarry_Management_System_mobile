@@ -11,8 +11,6 @@ class BooksProvider with ChangeNotifier {
   List<BookModel> get bookshelf => _bookcatalog;
 
 
-
-
   Future<Map<String, dynamic>> fetchBookDetails(String bookId) async {
   final response = await http.get(
     Uri.parse('https://www.googleapis.com/books/v1/volumes/$bookId'),
@@ -72,7 +70,7 @@ class BooksProvider with ChangeNotifier {
   }
 
   Future<void> deleteBook(String id) async {
-    try {
+       try {
       final response = await http.post(
         Uri.parse(baseUrl),
         headers: {
@@ -84,10 +82,12 @@ class BooksProvider with ChangeNotifier {
         }),
       );
 
-      if (response.statusCode == 200) {
+      final responseData = jsonDecode(response.body);
+      if (response.statusCode == 200 && responseData['status'] == 'success') {
+        print('Book deleted successfully');
         fetchBooks();
       } else {
-        print('Failed to delete book: ${response.body}');
+        print('Failed to delete book: ${responseData['message']}');
       }
     } catch (e) {
       print('Error deleting book: $e');

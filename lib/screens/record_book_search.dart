@@ -87,6 +87,15 @@ class _SearchAddBookState extends State<SearchAddBook>
           child: Scaffold(
             floatingActionButton: _floatingActionWidget(),
             appBar: AppBar(
+              leading: TextButton(
+                onPressed: () {
+                  context.pushRoute(const CollectionScreen());
+                },
+                child: const Text(
+                  'Back',
+                  style: TextStyle(color: Colors.red),
+                ),
+              ),
               actions: [
                 Builder(
                   builder: (context) => IconButton(
@@ -121,7 +130,7 @@ class _SearchAddBookState extends State<SearchAddBook>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 verticalSpacing(30),
-                const ScreenHeader(headerText: 'Book Collection'),
+                const ScreenHeader(headerText: 'Record Book'),
                 verticalSpacing(15),
                 Padding(
                   padding: const EdgeInsets.all(14.0),
@@ -281,20 +290,24 @@ class _SearchAddBookState extends State<SearchAddBook>
           final String title = volumeInfo['title'] ?? 'Unknown Title';
           final String subtitle = volumeInfo['subtitle'] ?? '';
           final List<dynamic>? authorsList = volumeInfo['authors'];
-        List<String>? authors;
-        if (authorsList != null) {
-          authors = authorsList.cast<String>(); // Convert to List<String>
-        }
-        final String? bookUrl = item['volumeInfo']['previewLink'] ?? item['volumeInfo']['infoLink'];
+          List<String>? authors;
+          if (authorsList != null) {
+            authors = authorsList.cast<String>(); // Convert to List<String>
+          }
+          final String? bookUrl = item['volumeInfo']['previewLink'] ??
+              item['volumeInfo']['infoLink'];
           final String? thumbnail = volumeInfo['imageLinks']?['thumbnail'];
-         // Description
-        final String? description = volumeInfo['description'];
+          // Description
+          final String? description = volumeInfo['description'];
           final int availableCopies = 1; // Assume one available copy
           final String? edition = volumeInfo['edition'] ?? 'Unknown';
           final String? publisher = volumeInfo['publisher'];
           final List<dynamic>? identifiers = volumeInfo['industryIdentifiers'];
-          final String? isbn = identifiers != null && identifiers.isNotEmpty ? identifiers[0]['identifier'] : '';
-          final String length = volumeInfo['pageCount']?.toString() ?? 'Unknown';
+          final String? isbn = identifiers != null && identifiers.isNotEmpty
+              ? identifiers[0]['identifier']
+              : '';
+          final String length =
+              volumeInfo['pageCount']?.toString() ?? 'Unknown';
           final List<dynamic>? subjectsList = volumeInfo['categories'];
           final List<dynamic>? categoriesList = volumeInfo['categories'];
           final List<String> subjects = [];
@@ -326,7 +339,7 @@ class _SearchAddBookState extends State<SearchAddBook>
             availableCopies: availableCopies,
             edition: edition,
             publisher: publisher,
-            isbn: isbn, 
+            isbn: isbn,
             subjects: subjects.isNotEmpty ? subjects : null,
             categories: categories.isNotEmpty ? categories : null,
           ));

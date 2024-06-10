@@ -23,18 +23,7 @@ class _CatalogScreenState extends State<CatalogScreen> {
   final TextEditingController _searchController = TextEditingController();
   HomeProvider? _provider;
 
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   _provider = Provider.of<HomeProvider>(context, listen: false);
-  //   _provider?.getBooks();
-  //   _scrollController.addListener(() {
-  //     if (_scrollController.position.pixels ==
-  //         _scrollController.position.maxScrollExtent) {
-  //       _getBooksApi();
-  //     }
-  //   });
-  // }
+
   @override
   void initState() {
     super.initState();
@@ -59,7 +48,6 @@ class _CatalogScreenState extends State<CatalogScreen> {
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 08.0, horizontal: 8.0),
           child: Scaffold(
-            // floatingActionButton: _floatingActionWidget(),
             appBar: AppBar(
               actions: [
                 Builder(

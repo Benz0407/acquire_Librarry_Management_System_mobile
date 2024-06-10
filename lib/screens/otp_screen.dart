@@ -121,55 +121,66 @@ class _OtpScreenState extends State<OtpScreen> {
           const SizedBox(
             height: 40,
           ),
-          ElevatedButton(
-            onPressed: () async {
-              if (await widget.myauth.verifyOTP(
-                      otp: otp1Controller.text +
-                          otp2Controller.text +
-                          otp3Controller.text +
-                          otp4Controller.text) ==
-                  true) {
-                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                  content: Text("OTP is verified"),
-                ));
-
-                final otpProvider =
-                    Provider.of<OtpProvider>(context, listen: false);
-                print(widget.schoolId);
-                final userDetails =
-                    await otpProvider.getUserDetails(widget.schoolId);
-                if (userDetails != null) {
-                  print(
-                      "User Details: $userDetails"); // Debugging statement to check the response
-                } else {
-                  print("Failed to fetch user details here on otp_screen");
-                }
-                if (userDetails != null) {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) =>
-                          RegistrationFormScreen(userDetails: userDetails),
-                    ),
-                  );
+          Container(
+            height: 55,
+                      width: MediaQuery.of(context).size.width * .4,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8),
+                          color: Colors.red),
+            child: ElevatedButton(
+              onPressed: () async {
+                if (await widget.myauth.verifyOTP(
+                        otp: otp1Controller.text +
+                            otp2Controller.text +
+                            otp3Controller.text +
+                            otp4Controller.text) ==
+                    true) {
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                    content: Text("OTP is verified"),
+                  ));
+            
+                  final otpProvider =
+                      Provider.of<OtpProvider>(context, listen: false);
+                  // print(widget.schoolId);
+                  final userDetails =
+                      await otpProvider.getUserDetails(widget.schoolId);
+                  if (userDetails != null) {
+                    // print(
+                    //     "User Details: $userDetails"); // Debugging statement to check the response
+                  } else {
+                    // print("Failed to fetch user details here on otp_screen");
+                  }
+                  if (userDetails != null) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            RegistrationFormScreen(userDetails: userDetails),
+                      ),
+                    );
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                      content: Text("Failed to fetch user details"),
+                    ));
+                  }
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                    content: Text("Failed to fetch user details"),
+                    content: Text("Invalid OTP"),
                   ));
                 }
-              } else {
-                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                  content: Text("Invalid OTP"),
-                ));
-              }
-            },
-            style: ButtonStyle(
-              backgroundColor: WidgetStateProperty.all<Color>(Colors.red)
-            ),
-            child: const Text(
-              "Confirm",
-              
-              style: TextStyle(fontSize: 20,color: Colors.white),
+              },
+              style: ButtonStyle(
+                  backgroundColor: WidgetStateProperty.all<Color>(Colors.red)),
+              child: const Text(
+                          'Confirm',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontFamily: 'League Spartan',
+                            fontWeight: FontWeight.w700,
+                            height: 0,
+                          ),
+                        ),
             ),
           )
         ],

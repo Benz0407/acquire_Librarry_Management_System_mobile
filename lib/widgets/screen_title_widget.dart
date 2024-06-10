@@ -38,7 +38,8 @@ class ScreenHeader extends StatelessWidget {
                   fontSize: 25,
                   fontFamily: 'League Spartan',
                   fontWeight: FontWeight.w900,
-                  height: 1, // Adjusted to avoid overlapping
+                  height: 1, 
+                  
                 ),
               ),
             ],

@@ -24,20 +24,19 @@ class BookDetailScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         actions: [
-                IconButton(
-                  icon: const Icon(Icons.menu, color: Colors.red),
-                  onPressed: () {
-                  },
-                ),
-              ],
-         bottom: PreferredSize(
-                preferredSize: const Size.fromHeight(1.0),
-                child: Container(
-                  color: const Color(0xFF909090),
-                  height: 4.0,
-                  margin: const EdgeInsets.symmetric(vertical: 0.0, horizontal: 13.0),
-                ),
-              ),
+          IconButton(
+            icon: const Icon(Icons.menu, color: Colors.red),
+            onPressed: () {},
+          ),
+        ],
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(1.0),
+          child: Container(
+            color: const Color(0xFF909090),
+            height: 4.0,
+            margin: const EdgeInsets.symmetric(vertical: 0.0, horizontal: 13.0),
+          ),
+        ),
         backgroundColor: Colors.transparent,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
@@ -88,7 +87,8 @@ class BookDetailScreen extends StatelessWidget {
                   const ScreenHeader(headerText: 'Book Detail'),
                   verticalSpacing(40),
                   Padding(
-                    padding: const EdgeInsets.only(left: 16, right: 16, top: 16),
+                    padding:
+                        const EdgeInsets.only(left: 16, right: 16, top: 16),
                     child: Text(
                       "${bookModel?.title}",
                       style: const TextStyle(
@@ -98,13 +98,14 @@ class BookDetailScreen extends StatelessWidget {
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.only(left: 16, right: 16, top: 16),
+                    padding:
+                        const EdgeInsets.only(left: 16, right: 16, top: 16),
                     child: Text(
                       bookModel?.subtitle ?? "-",
                       style: const TextStyle(color: Colors.black, fontSize: 14),
                     ),
                   ),
-                 Row(
+                  Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Padding(
@@ -114,8 +115,7 @@ class BookDetailScreen extends StatelessWidget {
                       ),
                       Expanded(
                         child: Padding(
-                          padding: const EdgeInsets.only(
-                              right: 16, top: 16),
+                          padding: const EdgeInsets.only(right: 16, top: 16),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -167,7 +167,7 @@ class BookDetailScreen extends StatelessWidget {
                         ),
                       ),
                     ],
-                  ), 
+                  ),
                   verticalSpacing(20),
                   Center(
                     child: Container(
@@ -200,8 +200,10 @@ class BookDetailScreen extends StatelessWidget {
                   ),
                   verticalSpacing(20),
                   Padding(
-                      padding: const EdgeInsets.only(left: 16, right: 16, top: 16),
-                      child: HtmlWidget(bookModel?.description ?? "-")),
+                      padding:
+                          const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 20),
+                      child: HtmlWidget(bookModel?.description ?? "-")
+                      ),
                 ],
               ),
             ),

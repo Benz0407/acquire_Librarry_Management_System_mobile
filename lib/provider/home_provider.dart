@@ -1,46 +1,7 @@
-// import 'dart:convert';
-
-// import 'package:acquire_lms_mobile_app/models/book_model.dart';
-// import 'package:flutter/widgets.dart';
-// import 'package:http/http.dart' as http;
-
-// class HomeProvider with ChangeNotifier {
-//   List<BookModel> books = [];
-//   int page = 0;
-//   bool isLoading = true;
-//   String? query = "Informating Technology";
-
-//   Future<void> getBooks() async {
-//     try {
-//       final response = await http.get(Uri.parse(
-//           "https://www.googleapis.com/books/v1/volumes?q=$query&startIndex=$page&maxResults=40"));
-
-//       //print("response.body ${response.body}");
-//       final items = jsonDecode(response.body)['items'];
-//       List<BookModel> bookList = [];
-//       for (var item in items) {
-//         bookList.add(BookModel.fromApi(item));
-//       }
-
-//       books.addAll(bookList);
-//       page += 40;
-//       isLoading = false;
-//       notifyListeners();
-//     } catch (e) {
-//       // print("error get books $e");
-//     }
-//   }
-
-//   void showLoading() {
-//     isLoading = true;
-//     notifyListeners();
-//   }
-// }
 import 'dart:convert';
 import 'package:acquire_lms_mobile_app/models/book_model.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-
 
 class HomeProvider with ChangeNotifier {
   final String localApiUrl = 'http://127.0.0.1/UsersDb/books.php';
@@ -65,7 +26,7 @@ class HomeProvider with ChangeNotifier {
     }
   }
 
-Future<void> adminGetBooks() async {
+  Future<void> adminGetBooks() async {
     isLoading = true;
     notifyListeners();
 
@@ -81,12 +42,13 @@ Future<void> adminGetBooks() async {
   }
 
   Future<void> _fetchBooksFromLocal() async {
-   try {
+    try {
       final response = await http.get(
         Uri.parse(localApiUrl),
         headers: {'Content-Type': 'application/json'},
+        
       );
-
+  
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         if (data['books'] is List) {
@@ -120,7 +82,8 @@ Future<void> adminGetBooks() async {
               .toList();
           books.addAll(googleBooks);
         } else {
-          print('Unexpected response format for Google Books: ${response.body}');
+          print(
+              'Unexpected response format for Google Books: ${response.body}');
         }
       } else {
         print('Failed to fetch Google Books: ${response.body}');
@@ -135,9 +98,26 @@ Future<void> adminGetBooks() async {
     notifyListeners();
   }
 
-  Future <void> deleteBook(String bookId) async {
+  Future<void> deleteBook(String bookId) async {
+  final url = Uri.parse('$localApiUrl/books/$bookId');
 
+    try {
+      final response = await http.delete(
+        url,
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      if (response.statusCode == 200) {
+        print('Book deleted successfully');
+        _fetchBooksFromLocal(); 
+      } else {
+        print('Failed to delete book: ${response.body}');
+        throw Exception('Failed to delete book');
+      }
+    } catch (e) {
+      print('Error deleting book: $e');
+      throw e;
+    }
   }
-  
-
 }
+

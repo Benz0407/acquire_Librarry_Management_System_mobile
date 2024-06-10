@@ -4,7 +4,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
-
+import 'package:acquire_lms_mobile_app/config/app_router.gr.dart';
 import 'package:acquire_lms_mobile_app/models/user_model.dart';
 import 'package:acquire_lms_mobile_app/utils/spaces.dart';
 import 'package:acquire_lms_mobile_app/widgets/app_bar_widget.dart';
@@ -16,7 +16,6 @@ import 'package:qr_flutter/qr_flutter.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:universal_html/html.dart' as html;
 
-
 @RoutePage()
 class LibraryCardScreen extends StatefulWidget {
   final User user;
@@ -27,9 +26,7 @@ class LibraryCardScreen extends StatefulWidget {
 }
 
 class _LibraryCardScreenState extends State<LibraryCardScreen> {
-  
-   final GlobalKey _globalKey = GlobalKey();
-
+  final GlobalKey _globalKey = GlobalKey();
 
   String getCombinedName(User user) {
     String middleInitial =
@@ -52,17 +49,18 @@ class _LibraryCardScreenState extends State<LibraryCardScreen> {
       'ContactNumber': user.contactNumber,
       'EmailAddress': user.emailAddress,
       'AccountType': user.accountType
-          .toString(), // Converting account type to string for QR code
+          .toString(), 
     };
     return jsonEncode(userData);
   }
 
-Future<void> _downloadLibraryCard() async {
+  Future<void> _downloadLibraryCard() async {
     try {
-      RenderRepaintBoundary boundary =
-          _globalKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
+      RenderRepaintBoundary boundary = _globalKey.currentContext!
+          .findRenderObject() as RenderRepaintBoundary;
       ui.Image image = await boundary.toImage(pixelRatio: 3.0);
-      ByteData? byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+      ByteData? byteData =
+          await image.toByteData(format: ui.ImageByteFormat.png);
       Uint8List pngBytes = byteData!.buffer.asUint8List();
 
       // Generate PDF
@@ -100,7 +98,8 @@ Future<void> _downloadLibraryCard() async {
       // Handle errors
       // print(e);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('An error occurred while saving the card')),
+        const SnackBar(
+            content: Text('An error occurred while saving the card')),
       );
     }
   }
@@ -161,7 +160,8 @@ Future<void> _downloadLibraryCard() async {
                   height: 500,
                   decoration: BoxDecoration(
                     color: Colors.white,
-                    border: Border.all(color: Colors.blueGrey.shade300, width: 2),
+                    border:
+                        Border.all(color: Colors.blueGrey.shade300, width: 2),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Card(
@@ -325,13 +325,16 @@ Future<void> _downloadLibraryCard() async {
               height: 55,
               width: MediaQuery.of(context).size.width * .9,
               decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8), color: Colors.red),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Colors.red),
+                color: Colors.white,
+              ),
               child: TextButton(
                   onPressed: _downloadLibraryCard,
                   child: const Text(
                     "Download Library Card",
                     style: TextStyle(
-                      color: Colors.white,
+                      color: Colors.red, 
                       fontSize: 16,
                       fontFamily: 'League Spartan',
                       fontWeight: FontWeight.w700,
@@ -347,7 +350,7 @@ Future<void> _downloadLibraryCard() async {
                   borderRadius: BorderRadius.circular(8), color: Colors.red),
               child: TextButton(
                   onPressed: () {
-                    // Implement sign in functionality
+                    context.router.navigate(const LoginRoute());
                   },
                   child: const Text(
                     "Sign in",

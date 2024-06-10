@@ -1,5 +1,6 @@
 import 'package:acquire_lms_mobile_app/config/app_router.gr.dart';
 import 'package:acquire_lms_mobile_app/models/book_model.dart';
+import 'package:acquire_lms_mobile_app/provider/book_provider.dart';
 import 'package:acquire_lms_mobile_app/provider/detail_provider.dart';
 import 'package:acquire_lms_mobile_app/provider/home_provider.dart';
 import 'package:acquire_lms_mobile_app/utils/spaces.dart';
@@ -119,8 +120,7 @@ class AdminBookDetailsScreen extends StatelessWidget {
                       ),
                       Expanded(
                         child: Padding(
-                          padding: const EdgeInsets.only(
-                              right: 16, top: 16),
+                          padding: const EdgeInsets.only(right: 16, top: 16),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -211,26 +211,66 @@ class AdminBookDetailsScreen extends StatelessWidget {
                   ),
                   verticalSpacing(20),
                   Padding(
-                    padding: const EdgeInsets.only(left: 16, right: 16),
+                    padding: const EdgeInsets.only(left: 16, right: 16, bottom: 20),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        ElevatedButton(
-                          onPressed: () {
-                            _editBook(context, bookId!);
-                          },
-                          child: const Text("Modify"),
-                        ),
-                        ElevatedButton(
-                          onPressed: () {
-                            _deleteBook(context, bookModel?.id);
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor:
-                                Colors.red, // Set the background color to red
+                        Container(
+                          height: 55,
+                          width: MediaQuery.of(context).size.width * .4,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: Colors.red),
+                            color: Colors.white,
                           ),
-                          child: const Text("Unlist"),
+                          child: TextButton(
+                            onPressed: () {
+                              _editBook(context, bookId!);
+                            },
+                            child: const Text(
+                              'Modify Book',
+                              style: TextStyle(
+                                color: Colors.red,
+                                fontSize: 16,
+                                fontFamily: 'League Spartan',
+                                fontWeight: FontWeight.w700,
+                                height: 0,
+                              ),
+                            ),
+                          ),
                         ),
+                        Container(
+                          height: 55,
+                          width: MediaQuery.of(context).size.width * .4,
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(8),
+                              color: Colors.red),
+                          child: TextButton(
+                            onPressed: () {
+                              _deleteBook(context, bookModel?.id);
+                            },
+                            child: const Text(
+                              'Unlist Book',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                                fontFamily: 'League Spartan',
+                                fontWeight: FontWeight.w700,
+                                height: 0,
+                              ),
+                            ),
+                          ),
+                        ),
+                        // ElevatedButton(
+                        //   onPressed: () {
+                        //     _deleteBook(context, bookModel?.id);
+                        //   },
+                        //   style: ElevatedButton.styleFrom(
+                        //     backgroundColor:
+                        //         Colors.red, // Set the background color to red
+                        //   ),
+                        //   child: const Text("Unlist"),
+                        // ),
                       ],
                     ),
                   ),
@@ -247,16 +287,15 @@ class AdminBookDetailsScreen extends StatelessWidget {
     return Provider.of<HomeProvider>(context, listen: false).books.isNotEmpty;
   }
 
-
   void _editBook(BuildContext context, String bookId) {
     context.pushRoute(ModifyBookScreen(bookId: bookId));
   }
 
   void _deleteBook(BuildContext context, String? bookId) async {
     if (bookId != null) {
-      final homeProvider = Provider.of<HomeProvider>(context, listen: false);
-      await homeProvider.deleteBook(bookId);
-      Navigator.pop(context); // Go back to the previous screen after deletion
+      final booksProvider = Provider.of<BooksProvider>(context, listen: false);
+      await booksProvider.deleteBook(bookId);
+      context.router.navigate(const CatalogScreen()); 
     }
   }
 }
