@@ -29,7 +29,11 @@ class _CatalogScreenState extends State<CatalogScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _provider = Provider.of<HomeProvider>(context, listen: false);
-      _provider?.getBooks();
+      _provider?.getBooks().then((_) {
+        _provider?.getNewBooks().then((_) {
+          _showNewBooksModal(context, _provider?.newBooks ?? []);  
+        });
+      });
     });
 
     _scrollController.addListener(() {
@@ -95,7 +99,7 @@ class _CatalogScreenState extends State<CatalogScreen> {
                         hintText: 'Search for books...'),
                     onSubmitted: (value) {
                       if (value.trim().isEmpty) {
-                        return; // Do nothing if the input is empty or just whitespace
+                        return; 
                       }
                       _provider?.query = value;
                       _provider?.books.clear();
@@ -144,4 +148,41 @@ class _CatalogScreenState extends State<CatalogScreen> {
     _provider?.showLoading();
     _provider?.getBooks();
   }
+
+  void _showNewBooksModal(BuildContext context, List<BookModel> newBooks) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('New Books Added'),
+          content: Container(
+            width: double.maxFinite,
+            child: ListView.builder(
+              shrinkWrap: true,
+              itemCount: newBooks.length,
+              itemBuilder: (context, index) {
+                final book = newBooks[index];
+                return ListTile(
+                  leading: Image.network(book.thumbnail ?? "", width: 50, height: 50),
+                  title: Text(book.title ?? "-"),
+                  subtitle: Text(book.authors?.join(", ") ?? "Unknown Author"),
+                );
+              },
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Close'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+
+  
 }

@@ -27,7 +27,6 @@ class RegistrationFormScreen extends StatefulWidget {
 }
 
 class _RegistrationFormScreenState extends State<RegistrationFormScreen> {
-  
   int? selectedRole;
   final libraryCardNumber = TextEditingController();
   final schoolIdNumber = TextEditingController();
@@ -45,8 +44,7 @@ class _RegistrationFormScreenState extends State<RegistrationFormScreen> {
   final _registerProvider = RegisterProvider();
 
   bool isVisible = false;
-
- 
+  bool agreeToTerms = false;
 
   @override
   void initState() {
@@ -77,9 +75,9 @@ class _RegistrationFormScreenState extends State<RegistrationFormScreen> {
   }
 
   void _registerUser() {
-    if (_formKey.currentState?.validate() ?? false) {
+    if (_formKey.currentState?.validate() ?? false && agreeToTerms) {
       final user = User(
-        accountType: selectedRole,
+        role: selectedRole,
         libraryCardNumber: libraryCardNumber.text,
         schoolIdNumber: schoolIdNumber.text,
         emailAddress: emailAddress.text,
@@ -97,41 +95,43 @@ class _RegistrationFormScreenState extends State<RegistrationFormScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('User registered successfully')),
         );
+        context.router.push(LibraryCardScreen(user: user));
       }).catchError((error) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Failed to register user: $error')),
         );
       });
-
-      // Pass user details to the next screen
-      context.router.push(LibraryCardScreen(user: user));
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('You must agree to the User\'s Agreement')),
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    // final registerProvider = Provider.of<RegisterProvider>(context);
     return Scaffold(
       appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          surfaceTintColor: Colors.transparent,
-          elevation: 0,
-          toolbarHeight: 125,
-          leading: TextButton(
+        backgroundColor: Colors.transparent,
+        surfaceTintColor: Colors.transparent,
+        elevation: 0,
+        toolbarHeight: 125,
+        leading: TextButton(
           onPressed: () {
-           context.back(); 
+            context.back();
           },
           child: const Text(
             'Back',
             style: TextStyle(color: Colors.red),
           ),
         ),
-          title: Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              Image.asset('assets/bookmark-5-128.png'),
-            ],
-          ),),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            Image.asset('assets/bookmark-5-128.png'),
+          ],
+        ),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
@@ -181,7 +181,7 @@ class _RegistrationFormScreenState extends State<RegistrationFormScreen> {
                 ],
               ),
               const SizedBox(height: 24),
-             const Row(
+              const Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   ScreenHeader(headerText: "Registration"),
@@ -278,9 +278,11 @@ class _RegistrationFormScreenState extends State<RegistrationFormScreen> {
               Row(
                 children: [
                   Checkbox(
-                    value: false,
+                    value: agreeToTerms,
                     onChanged: (bool? value) {
-                      // Handle checkbox state change
+                      setState(() {
+                        agreeToTerms = value ?? false;
+                      });
                     },
                   ),
                   const Expanded(
@@ -299,9 +301,12 @@ class _RegistrationFormScreenState extends State<RegistrationFormScreen> {
                   backgroundColor: Colors.red,
                 ),
                 onPressed: () {
-                  if (_formKey.currentState!.validate()) {
+                  if (_formKey.currentState!.validate() && agreeToTerms) {
                     _registerUser();
-                     context.router.push(LibraryCardScreen(user: User.fromJson(widget.userDetails)));
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('You must agree to the User\'s Agreement')),
+                    );
                   }
                 },
                 child: const Text('Sign Up'),

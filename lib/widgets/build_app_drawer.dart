@@ -49,20 +49,19 @@ class BuildAppDrawer extends StatelessWidget {
               Navigator.pop(context);
             },
           ),
-          ListTile(
-            leading: const Icon(Icons.collections_bookmark),
-            title: const Text('Book Collection'),
-            onTap: () {
-              //  CollectionRoute here
-              context.router.replace(const CollectionScreen());
-            },
-          ),
+          if (loginProvider.userRole == 'Librarian' || loginProvider.userRole == 'Library Admin')
+            ListTile(
+              leading: const Icon(Icons.collections_bookmark),
+              title: const Text('Book Collection'),
+              onTap: () {
+                context.replaceRoute(const CollectionScreen());
+              },
+            ),
           ListTile(
             leading: const Icon(Icons.library_books),
             title: const Text('Book Catalog'),
             onTap: () {
-              context..router.navigate(const CatalogScreen());
-              
+              context.replaceRoute(const CatalogScreen());
             },
           ),
           ListTile(
@@ -79,7 +78,7 @@ class BuildAppDrawer extends StatelessWidget {
               await loginProvider.signOutUser();
                 Navigator.pop(context); // This pops the drawer
                 // Add navigation to the login screen or home screen
-                context.router.replace(const LoginRoute());
+                context.replaceRoute(const LoginRoute());
             },
           ),
         ],

@@ -18,6 +18,7 @@ class BookModel {
   List<String>? subjects;
   List<String>? categories;
   Uint8List? coverBlob; 
+  String? bookStatus; 
 
   BookModel({
     this.id,
@@ -35,6 +36,7 @@ class BookModel {
     this.subjects,
     this.categories,
     this.coverBlob, 
+    this.bookStatus,
   });
 
   String _stripHtmlTags(String htmlString) {
@@ -91,6 +93,8 @@ class BookModel {
           categories: data['volumeInfo']['categories'] != null
           ? List<String>.from(data['volumeInfo']['categories'])
           : null,
+          coverBlob: data['coverBlob'] != null ? base64Decode(data['coverBlob']) : null,
+          bookStatus: data['bookStatus']
     );
 
     // Strip HTML tags from the description
@@ -124,6 +128,7 @@ factory BookModel.fromJson(Map<String, dynamic> json) {
         ? List<String>.from(json['categories'])
         : [], // Ensure 'categories' is always parsed as a List
     coverBlob: json['coverBlob'] != null ? base64Decode(json['coverBlob']) : null,
+    bookStatus: json['bookStatus']
   );
 }
 
@@ -145,6 +150,7 @@ factory BookModel.fromJson(Map<String, dynamic> json) {
       'subjects': subjects,
       'categories': categories,
       'coverBlob': coverBlob != null ? base64Encode(coverBlob!) : null,
+      'bookStats' : bookStatus
     };
   }
 
@@ -163,6 +169,7 @@ factory BookModel.fromJson(Map<String, dynamic> json) {
     List<String>? subjects,
     List<String>? categories,
     Uint8List? coverBlob,
+    String? bookStatus
   }) {
     return BookModel(
       id: id,
@@ -180,6 +187,7 @@ factory BookModel.fromJson(Map<String, dynamic> json) {
       subjects: subjects ?? this.subjects,
       categories: categories ?? this.categories,
       coverBlob: coverBlob ?? this.coverBlob, 
+      bookStatus: bookStatus ?? this.bookStatus
     );
   }
 }

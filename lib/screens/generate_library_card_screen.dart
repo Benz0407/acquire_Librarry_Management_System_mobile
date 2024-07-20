@@ -42,14 +42,12 @@ class _LibraryCardScreenState extends State<LibraryCardScreen> {
     final userData = {
       'LibraryCardNumber': user.libraryCardNumber,
       'SchoolIdNumber': user.schoolIdNumber,
-
       'Name': getCombinedName(user),
       'Department': user.department,
       'Course': user.course,
       'ContactNumber': user.contactNumber,
       'EmailAddress': user.emailAddress,
-      'AccountType': user.accountType
-          .toString(), 
+      'UserType': user.role.toString(),
     };
     return jsonEncode(userData);
   }
@@ -96,7 +94,7 @@ class _LibraryCardScreenState extends State<LibraryCardScreen> {
       );
     } catch (e) {
       // Handle errors
-      // print(e);
+     print('Error downloading library card: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
             content: Text('An error occurred while saving the card')),
@@ -141,7 +139,7 @@ class _LibraryCardScreenState extends State<LibraryCardScreen> {
         child: ListView(
           children: [
             verticalSpacing(16),
-            const ScreenHeader(headerText: 'How to use your Library Card'),
+            const ScreenHeader(headerText: 'Use your Library Card'),
             const SizedBox(height: 8),
             const Text(
               'Your library card serves as your official identification for accessing library resources.\n\n'
@@ -157,7 +155,7 @@ class _LibraryCardScreenState extends State<LibraryCardScreen> {
                 key: _globalKey,
                 child: Container(
                   width: 343,
-                  height: 500,
+                  height: 550,
                   decoration: BoxDecoration(
                     color: Colors.white,
                     border:
@@ -185,6 +183,8 @@ class _LibraryCardScreenState extends State<LibraryCardScreen> {
                                     const Column(
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
                                       children: [
                                         Text(
                                           'Library Card',
@@ -193,7 +193,6 @@ class _LibraryCardScreenState extends State<LibraryCardScreen> {
                                             fontSize: 16,
                                             fontFamily: 'League Spartan',
                                             fontWeight: FontWeight.w700,
-                                            height: 0,
                                           ),
                                         ),
                                         Text(
@@ -203,7 +202,6 @@ class _LibraryCardScreenState extends State<LibraryCardScreen> {
                                             fontSize: 11,
                                             fontFamily: 'League Spartan',
                                             fontWeight: FontWeight.w400,
-                                            height: 0,
                                           ),
                                         ),
                                       ],
@@ -216,6 +214,7 @@ class _LibraryCardScreenState extends State<LibraryCardScreen> {
                                     0.0, 10.0, 10.0, 10.0),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.end,
+                                  mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     const Text(
                                       'Student ID',
@@ -224,7 +223,6 @@ class _LibraryCardScreenState extends State<LibraryCardScreen> {
                                         fontSize: 14,
                                         fontFamily: 'League Spartan',
                                         fontWeight: FontWeight.w700,
-                                        height: 0,
                                       ),
                                     ),
                                     Text(
@@ -240,13 +238,13 @@ class _LibraryCardScreenState extends State<LibraryCardScreen> {
                             ],
                           ),
                         ),
-                        const SizedBox(height: 8),
+                        const SizedBox(height: 16),
                         QrImageView(
                           data: qrData,
                           version: QrVersions.auto,
                           size: 200.0,
                         ),
-                        const SizedBox(height: 8),
+                        const SizedBox(height: 16),
                         Text(
                           widget.user.libraryCardNumber,
                           style: const TextStyle(
@@ -254,65 +252,66 @@ class _LibraryCardScreenState extends State<LibraryCardScreen> {
                             fontSize: 20,
                             fontFamily: 'League Spartan',
                             fontWeight: FontWeight.w400,
-                            height: 0,
                             letterSpacing: 1,
                           ),
                         ),
                         const SizedBox(height: 16),
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Text(
-                              "Name: ${getCombinedName(widget.user)}",
-                              style: const TextStyle(
-                                color: Colors.black,
-                                fontSize: 14,
-                                fontFamily: 'League Spartan',
-                                fontWeight: FontWeight.w700,
-                                height: 0,
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "Name: ${getCombinedName(widget.user)}",
+                                style: const TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 14,
+                                  fontFamily: 'League Spartan',
+                                  fontWeight: FontWeight.w700,
+                                ),
                               ),
-                            ),
-                            Text(
-                              "Department: ${widget.user.department}",
-                              style: const TextStyle(
-                                color: Colors.black,
-                                fontSize: 14,
-                                fontFamily: 'League Spartan',
-                                fontWeight: FontWeight.w700,
-                                height: 0,
+                              const SizedBox(height: 4),
+                              Text(
+                                "Department: ${widget.user.department}",
+                                style: const TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 14,
+                                  fontFamily: 'League Spartan',
+                                  fontWeight: FontWeight.w700,
+                                ),
                               ),
-                            ),
-                            Text(
-                              "Course: ${widget.user.course}",
-                              style: const TextStyle(
-                                color: Colors.black,
-                                fontSize: 14,
-                                fontFamily: 'League Spartan',
-                                fontWeight: FontWeight.w700,
-                                height: 0,
+                              const SizedBox(height: 4),
+                              Text(
+                                "Course: ${widget.user.course}",
+                                style: const TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 14,
+                                  fontFamily: 'League Spartan',
+                                  fontWeight: FontWeight.w700,
+                                ),
                               ),
-                            ),
-                            Text(
-                              "Contact Number: ${widget.user.contactNumber}",
-                              style: const TextStyle(
-                                color: Colors.black,
-                                fontSize: 14,
-                                fontFamily: 'League Spartan',
-                                fontWeight: FontWeight.w700,
-                                height: 0,
+                              const SizedBox(height: 4),
+                              Text(
+                                "Contact Number: ${widget.user.contactNumber}",
+                                style: const TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 14,
+                                  fontFamily: 'League Spartan',
+                                  fontWeight: FontWeight.w700,
+                                ),
                               ),
-                            ),
-                            Text(
-                              "Email Address: ${widget.user.emailAddress}",
-                              style: const TextStyle(
-                                color: Colors.black,
-                                fontSize: 14,
-                                fontFamily: 'League Spartan',
-                                fontWeight: FontWeight.w700,
-                                height: 0,
+                              const SizedBox(height: 4),
+                              Text(
+                                "Email Address: ${widget.user.emailAddress}",
+                                style: const TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 14,
+                                  fontFamily: 'League Spartan',
+                                  fontWeight: FontWeight.w700,
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ],
                     ),
@@ -334,7 +333,7 @@ class _LibraryCardScreenState extends State<LibraryCardScreen> {
                   child: const Text(
                     "Download Library Card",
                     style: TextStyle(
-                      color: Colors.red, 
+                      color: Colors.red,
                       fontSize: 16,
                       fontFamily: 'League Spartan',
                       fontWeight: FontWeight.w700,

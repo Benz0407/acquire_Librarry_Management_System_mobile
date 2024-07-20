@@ -1,6 +1,6 @@
 class User {
   final int? userId;
-  final int? accountType;
+  final int? role;
   final String? schoolIdNumber;
   late final String libraryCardNumber;
   final String password;
@@ -15,7 +15,7 @@ class User {
 
   User({
     this.userId,
-    this.accountType,
+    this.role,
     this.schoolIdNumber,
     required this.libraryCardNumber,
     required this.password,
@@ -31,7 +31,7 @@ class User {
 
   // You can add methods like toJson and fromJson if needed for serialization
   Map<String, dynamic> toJson() => {
-        'UserType' : accountType, 
+        'UserType' : role, 
         'LibraryCardNumber': libraryCardNumber,
         'SchoolId': schoolIdNumber,
         'FirstName': firstName,
@@ -47,7 +47,7 @@ class User {
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
-      accountType: json['UserType'],
+      role: json['UserType'],
       userId: json['UserId'],
       libraryCardNumber: json['LibraryCardNumber'],
       schoolIdNumber: json['SchoolIdNumber'],
@@ -64,7 +64,7 @@ class User {
   }
 
   Map<String, dynamic> toMap() => {
-        'UserType': accountType,
+        'Role': role,
         'UserId': userId,
         'LibraryCardNumber': libraryCardNumber,
         'SchoolId': schoolIdNumber,

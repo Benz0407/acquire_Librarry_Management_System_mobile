@@ -1,7 +1,9 @@
 import 'package:acquire_lms_mobile_app/config/app_router.gr.dart';
 import 'package:acquire_lms_mobile_app/models/book_model.dart';
 import 'package:acquire_lms_mobile_app/provider/home_provider.dart';
+import 'package:acquire_lms_mobile_app/provider/login_provider.dart';
 import 'package:acquire_lms_mobile_app/utils/spaces.dart';
+import 'package:acquire_lms_mobile_app/widgets/admin_book_widget.dart';
 import 'package:acquire_lms_mobile_app/widgets/app_bar_widget.dart';
 import 'package:acquire_lms_mobile_app/widgets/book_widget.dart';
 import 'package:acquire_lms_mobile_app/widgets/build_app_drawer.dart';
@@ -79,6 +81,8 @@ class _CollectionScreenState extends State<CollectionScreen>
 
   @override
   Widget build(BuildContext context) {
+    final loginProvider = Provider.of<LoginProvider>(context);
+    final userRole = loginProvider.userRole;
     return Consumer<HomeProvider>(
       builder: (context, provider, widget) => SafeArea(
         top: true,
@@ -134,7 +138,7 @@ class _CollectionScreenState extends State<CollectionScreen>
                         hintText: 'Search for books...'),
                     onSubmitted: (value) {
                       if (value.trim().isEmpty) {
-                        return; // Do nothing if the input is empty or just whitespace
+                        return; 
                       }
                       _provider?.query = value;
                       _provider?.books.clear();
@@ -152,12 +156,15 @@ class _CollectionScreenState extends State<CollectionScreen>
                         onTap: () {
                           _openBookDetail(book);
                         },
-                        child: BookWidget(
+                        child: AdminBookWidget(
+                          id: book.id, 
                           title: book.title,
                           subtitle: book.subtitle ?? book.description,
                           thumbnail: book.thumbnail,
                           author: book.authors?.join(", ") ?? "Unknown Author",
                           availableCopies: book.availableCopies,
+                          userRole: userRole,
+                          bookStatus: book.bookStatus,
                         ),
                       );
                     },

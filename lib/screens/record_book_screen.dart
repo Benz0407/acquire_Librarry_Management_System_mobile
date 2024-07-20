@@ -50,7 +50,7 @@ class RecordBookPageState extends State<RecordBookPage> {
         final arrayBuffer = reader.result as Uint8List?;
         if (arrayBuffer != null) {
           setState(() {
-            _imageBytes = Uint8List.fromList(arrayBuffer);
+            _imageBytes = arrayBuffer; // Update _imageBytes state
           });
         }
       });
@@ -66,7 +66,7 @@ class RecordBookPageState extends State<RecordBookPage> {
         authors:
             _authorController.text.split(',').map((e) => e.trim()).toList(),
         description: _descriptionController.text,
-        thumbnail: '',
+        thumbnail: '', // This can be set later if needed
         bookUrl: '',
         availableCopies: int.parse(_copiesController.text),
         edition: _editionController.text,
@@ -75,8 +75,8 @@ class RecordBookPageState extends State<RecordBookPage> {
         length: _lengthController.text,
         subjects:
             _subjectsController.text.split(',').map((e) => e.trim()).toList(),
-        categories: _categoriesController.text.split(',').map((e) => e.trim()).toList(),
-
+        categories:
+            _categoriesController.text.split(',').map((e) => e.trim()).toList(),
         coverBlob: _imageBytes, // Use Uint8List directly
       );
 
@@ -86,7 +86,7 @@ class RecordBookPageState extends State<RecordBookPage> {
         SnackBar(content: Text('Book "${newBook.title}" added successfully!')),
       );
 
-      Navigator.of(context).pop();
+      context.replaceRoute(const CollectionScreen());
     }
   }
 
@@ -251,7 +251,7 @@ class RecordBookPageState extends State<RecordBookPage> {
                         child: const Text(
                           'Cancel',
                           style: TextStyle(
-                            color: Colors.red, 
+                            color: Colors.red,
                             fontSize: 16,
                             fontFamily: 'League Spartan',
                             fontWeight: FontWeight.w700,

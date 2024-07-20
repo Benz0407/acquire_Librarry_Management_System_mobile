@@ -261,16 +261,6 @@ class AdminBookDetailsScreen extends StatelessWidget {
                             ),
                           ),
                         ),
-                        // ElevatedButton(
-                        //   onPressed: () {
-                        //     _deleteBook(context, bookModel?.id);
-                        //   },
-                        //   style: ElevatedButton.styleFrom(
-                        //     backgroundColor:
-                        //         Colors.red, // Set the background color to red
-                        //   ),
-                        //   child: const Text("Unlist"),
-                        // ),
                       ],
                     ),
                   ),

@@ -56,6 +56,15 @@ class HomeProvider with ChangeNotifier {
               .map((item) => BookModel.fromJson(item))
               .toList();
           books.addAll(localBooks);
+          localBooks.forEach((book) {
+  print('Title: ${book.title}');
+  print('Subtitle: ${book.subtitle}');
+  print('Authors: ${book.authors}');
+  print('Thumbnail: ${book.thumbnail}');
+  print('Available Copies: ${book.availableCopies}');
+  print('Book Status: ${book.bookStatus}');
+  print('----------------------');
+});
         } else {
           print('Unexpected response format for local books: ${response.body}');
         }
@@ -98,26 +107,38 @@ class HomeProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> deleteBook(String bookId) async {
-  final url = Uri.parse('$localApiUrl/books/$bookId');
+  List<BookModel> _newBooks = [];
+
+  List<BookModel> get newBooks => _newBooks;
+
+
+  Future<void> getNewBooks() async {
+    const String localApiUrl = 'http://127.0.0.1/UsersDb/books.php'; // Update with your API endpoint
 
     try {
-      final response = await http.delete(
-        url,
+      final response = await http.get(
+        Uri.parse(localApiUrl),
         headers: {'Content-Type': 'application/json'},
       );
 
       if (response.statusCode == 200) {
-        print('Book deleted successfully');
-        _fetchBooksFromLocal(); 
+        final data = jsonDecode(response.body);
+        if (data['books'] is List) {
+          final books = (data['books'] as List<dynamic>)
+              .map((e) => BookModel.fromJson(e as Map<String, dynamic>))
+              .toList();
+          _newBooks = books.where((book) => book.bookStatus == "Approved").toList();
+          notifyListeners();
+        } else {
+          print('Unexpected response format for local books: ${response.body}');
+        }
       } else {
-        print('Failed to delete book: ${response.body}');
-        throw Exception('Failed to delete book');
+        print('Failed to fetch local books: ${response.body}');
       }
     } catch (e) {
-      print('Error deleting book: $e');
-      throw e;
+      print("Error fetching local books: $e");
     }
   }
+
 }
 
